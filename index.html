@@ -86,7 +86,7 @@ canvas { position: fixed; inset: 0; display: block; }
       <img src="assets/sable.png" alt="Sable, la mascota de la UVP" onerror="this.style.display='none'">
     </div>
     <h1>AMATI <span>CORRE</span></h1>
-    <p>Atrapa <b>técnicas</b> y <b>herramientas</b> de estudio, esquiva las distracciones y no dejes que <b>Sable</b>, la policía del enfoque, te alcance.</p>
+    <p>Atrapa <b>tarjetas</b> de colores, esquiva las distracciones y no dejes que <b>Sable</b>, la policía, te alcance. Cada nivel es más rápido y más difícil: ¿hasta dónde llegas?</p>
     <ul class="how">
       <li><b>Teclado:</b> ← → cambian de carril · ↑ o Espacio saltan · ↓ desliza · P pausa · M sonido</li>
       <li><b>Pantalla táctil:</b> desliza el dedo (izquierda, derecha, arriba, abajo)</li>
@@ -139,8 +139,6 @@ const FONT = "'Trebuchet MS','Segoe UI',system-ui,-apple-system,Roboto,Arial,san
 let g2 = fx;   // contexto 2D "actual" (para texturas y capa de texto)
 
 /* ---------- Contenido educativo (editable) ---------- */
-const TECH  = ['Leitner', 'Cornell', 'Repaso espaciado', 'Mapas mentales', 'Recuerdo activo', 'Intercalado'];
-const TOOLS = ['Mermaid', 'Calculadora', 'ECharts', 'Agenda', 'Tarjetas', 'Temporizador'];
 const POWERS = {
   pomodoro: { name: 'Pomodoro',    col: '#ff5a4d', glyph: 'P' },
   feynman:  { name: 'Feynman',     col: '#ffd23f', glyph: 'x2' },
@@ -320,18 +318,13 @@ function icon(k, x, y, r) {
 const TEX = {};
 const texIcon = k => TEX['i' + k] || (TEX['i' + k] = mkTex(128, 128, (x) => { icon(k, 64, 64, 46); }));
 const texPower = p => TEX['p' + p] || (TEX['p' + p] = mkTex(128, 128, (x) => { g2.beginPath(); g2.arc(64, 64, 52, 0, 7); fs(POWERS[p].col, 8); g2.fillStyle = C.navy; g2.font = '900 56px ' + FONT; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillText(POWERS[p].glyph, 64, 68); }));
-const texCard = (name, cat) => TEX['c' + name] || (TEX['c' + name] = mkTex(256, 340, (x, w, h) => {
-  rr(6, 6, w - 12, h - 12, 34); fs(cat === 'tech' ? C.teal : C.coral, 12);
-  g2.fillStyle = '#fff';
-  if (cat === 'tech') { g2.beginPath(); g2.arc(128, 98, 44, 0, 7); g2.fill(); g2.fillRect(106, 134, 44, 18); g2.lineWidth = 6; g2.strokeStyle = C.navy; g2.stroke(); }
-  else { g2.beginPath(); for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, r = i % 2 ? 42 : 56; g2.lineTo(128 + Math.cos(a) * r, 100 + Math.sin(a) * r); } g2.closePath(); fs('#fff', 6); g2.beginPath(); g2.arc(128, 100, 18, 0, 7); fs(C.coral, 6); }
-  rr(24, 190, w - 48, 110, 22); fs('#fff', 0);
-  g2.fillStyle = C.navy; g2.textAlign = 'center'; g2.textBaseline = 'middle';
-  let fsz = 46; g2.font = '900 ' + fsz + 'px ' + FONT;
-  if (g2.measureText(name).width <= w - 70) g2.fillText(name, w / 2, 245);
-  else { const ws = name.split(' '), mid = Math.ceil(ws.length / 2), l = [ws.slice(0, mid).join(' '), ws.slice(mid).join(' ')]; fsz = 34;
-    g2.font = '900 ' + fsz + 'px ' + FONT; while (Math.max(g2.measureText(l[0]).width, g2.measureText(l[1] || '').width) > w - 70 && fsz > 14) { fsz -= 2; g2.font = '900 ' + fsz + 'px ' + FONT; }
-    g2.fillText(l[0], w / 2, 222); g2.fillText(l[1] || '', w / 2, 268); }
+const CARD_COLS = ['#12c8b4', '#ff6b5a', '#7b5cff', '#ffb400', '#ff2e93', '#2f9bff'];
+const texCard = v => TEX['c' + v] || (TEX['c' + v] = mkTex(256, 340, (x, w, h) => {
+  rr(6, 6, w - 12, h - 12, 38); fs(CARD_COLS[v], 12);
+  g2.fillStyle = 'rgba(255,255,255,.22)'; g2.beginPath(); g2.moveTo(10, 40); g2.lineTo(w - 10, 40); g2.lineTo(w - 10, 120); g2.lineTo(10, 190); g2.closePath(); g2.fill();
+  g2.beginPath(); for (let i = 0; i < 20; i++) { const a = i / 20 * Math.PI * 2 - Math.PI / 2, r = i % 2 ? 40 : 78; g2.lineTo(128 + Math.cos(a) * r, 150 + Math.sin(a) * r); } g2.closePath(); fs('#ffffff', 8);
+  g2.beginPath(); g2.arc(128, 150, 20, 0, 7); g2.fillStyle = CARD_COLS[v]; g2.fill();
+  g2.fillStyle = 'rgba(255,255,255,.9)'; for (let i = 0; i < 2; i++) { g2.beginPath(); g2.roundRect ? g2.roundRect(40, 260 + i * 34, i ? 120 : 176, 16, 8) : g2.rect(40, 260 + i * 34, 120, 16); g2.fill(); }
 }));
 const texWin = () => TEX.win || (TEX.win = mkTex(128, 128, () => { rr(22, 20, 84, 88, 12); fs('#fff3a0', 6); g2.fillStyle = 'rgba(255,255,255,.55)'; g2.fillRect(30, 28, 22, 70); }, true));
 const texRoad = () => TEX.road || (TEX.road = mkTex(256, 256, (x, w, h) => { g2.fillStyle = C.road; g2.fillRect(0, 0, w, h); g2.fillStyle = '#2b3470'; for (let i = 0; i < 70; i++) g2.fillRect(Math.random() * w, Math.random() * h, 3, 3);
@@ -392,7 +385,7 @@ let time = 0, caughtT = 0;
 let G, P, S_, things = [], pops = [], lastSpacing = 20;
 const BEST_KEY = 'amatiCorreMejor';
 let best = 0; try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
-function newG() { return { t: 0, dist: 0, cardPts: 0, score: 0, cards: 0, streak: 0, mult: 1, shield: false, x2: 0, slow: 0, chase: 0, invuln: 0, stumble: 0, spawnAcc: -16, shake: 0, counts: {} }; }
+function newG() { return { level: 1, maxMult: 1, v: 9, t: 0, dist: 0, cardPts: 0, score: 0, cards: 0, streak: 0, mult: 1, shield: false, x2: 0, slow: 0, chase: 0, invuln: 0, stumble: 0, spawnAcc: -16, shake: 0, counts: {}, chaseMax: 9 }; }
 function newP() { return { lx: 0, tl: 0, y: 0, vy: 0, slide: 0, qSlide: false, phase: 0, face: 1, roll: 0 }; }
 function newS() { return { show: 0, lx: 0, off: 0.9, say: '', sayT: 0, lunge: 0 }; }
 G = newG(); P = newP(); S_ = newS();
@@ -472,12 +465,12 @@ function say(txt, dur) { S_.say = txt; S_.sayT = dur || 2.4; }
 function pop_(txt, col) { pops.push({ txt, wx: P.lx * LW, wy: (P.y + 1.4) * PH, wz: 0, t: 0, col: col || '#fff' }); }
 function startGame() {
   audioInit(); musicStart(); sfx('start');
-  G = newG(); P = newP(); S_ = newS(); things = []; pops = []; lastSpacing = 20;
+  G = newG(); P = newP(); S_ = newS(); things = []; pops = []; PARTS = []; lastSpacing = 20; THT = THEMES[0]; TH = mkTh(THEMES[0]);
   state = 'play'; hideAll(); $('hud').classList.remove('hidden');
   S_.show = 1; S_.lx = 0; say(pick(SAY_INTRO), 2.2); roar();
   showHint('← → carriles · ↑ salta · ↓ desliza  (o desliza el dedo)', 6000);
 }
-function toMenu() { state = 'menu'; musicStop(); hideAll(); $('menu').classList.remove('hidden'); updateMenuBest(); G = newG(); P = newP(); S_ = newS(); things = []; pops = []; }
+function toMenu() { state = 'menu'; musicStop(); hideAll(); $('menu').classList.remove('hidden'); updateMenuBest(); G = newG(); P = newP(); S_ = newS(); things = []; pops = []; PARTS = []; THT = THEMES[0]; TH = mkTh(THEMES[0]); }
 function pauseGame() { if (state !== 'play') return; state = 'pause'; musicStop(); $('pause').classList.remove('hidden'); }
 function resumeGame() { if (state !== 'pause') return; state = 'play'; $('pause').classList.add('hidden'); musicStart(); }
 function hideAll() { ['menu', 'pause', 'end', 'hud'].forEach(i => $(i).classList.add('hidden')); }
@@ -492,9 +485,7 @@ function endGame() {
   $('endSay').textContent = G.cards >= 25 ? 'Muy buena racha de estudio, Pantera. Sable casi no te alcanza.' : 'Cada intento te enseña a mantener el enfoque.';
   $('eBest').textContent = isBest ? '¡Nueva mejor puntuación!' : 'Mejor puntuación en este dispositivo: ' + best;
   const box = $('endChips'); box.innerHTML = '';
-  const names = Object.keys(G.counts).sort((a, b) => G.counts[b].n - G.counts[a].n);
-  if (!names.length) box.innerHTML = '<span style="background:#eef3ff">Aún no atrapaste ninguna tarjeta</span>';
-  names.forEach(nm => { const sp = document.createElement('span'); sp.className = G.counts[nm].kind; sp.textContent = nm + ' ×' + G.counts[nm].n; box.appendChild(sp); });
+  [['tech', 'Nivel alcanzado: ' + G.level], ['tool', 'Racha máxima: x' + G.maxMult]].forEach(([k, t]) => { const sp = document.createElement('span'); sp.className = k; sp.textContent = t; box.appendChild(sp); });
   $('end').classList.remove('hidden');
 }
 
@@ -504,25 +495,30 @@ function doJump() { if (state !== 'play' || P.y > 0.001) return; P.vy = 6.4; P.y
 function doSlide() { if (state !== 'play') return; if (P.y > 0.001) { P.vy = -13; P.qSlide = true; } else P.slide = 0.7; sfx('slide'); }
 
 const ICONS = ['chat', 'heart', 'bell', 'play', 'phone', 'at'];
-function cardName(kind) { return kind === 'tech' ? pick(TECH) : pick(TOOLS); }
-function spawnRow() {
-  const z = 78, d = Math.min(1, G.t / 45), lanes = [-1, 0, 1], row = [];
-  if (Math.random() < 0.32) {
+function mkRow(z, d, safeNear) {
+  const lanes = [-1, 0, 1], row = [];
+  const safe = safeNear == null ? pick(lanes) : pick(lanes.filter(l => Math.abs(l - safeNear) <= 1));
+  if (safeNear == null && Math.random() < 0.3 * (1 - d * 0.6)) {
     const t = Math.random() < 0.5 ? 'low' : 'high', n = Math.random() < 0.5 ? 3 : 2;
     shuffle(lanes).slice(0, n).forEach(l => row.push({ lane: l, type: t }));
   } else {
-    const safe = pick(lanes);
-    lanes.forEach(l => { if (l === safe || Math.random() > 0.55 + 0.4 * d) return; const r = Math.random(); row.push({ lane: l, type: r < 0.45 + 0.15 * d ? 'wall' : (r < 0.75 ? 'low' : 'high') }); });
+    lanes.forEach(l => { if (l === safe || Math.random() > 0.55 + 0.42 * d) return; const r = Math.random(); row.push({ lane: l, type: r < 0.4 + 0.25 * d ? 'wall' : (r < 0.72 ? 'low' : 'high') }); });
   }
   row.forEach(o => things.push({ kind: 'obs', type: o.type, lane: o.lane, z, icon: pick(ICONS) }));
-  const used = new Set(row.map(r => r.lane)), lowLanes = row.filter(r => r.type === 'low').map(r => r.lane);
-  const cat = Math.random() < 0.62 ? 'tech' : 'tool';
+  return { row, safe };
+}
+function spawnRow() {
+  const z = 78, d = Math.min(1, G.t / 70), lanes = [-1, 0, 1];
+  const { row, safe } = mkRow(z, d, null);
+  if (G.t > 25 && Math.random() < 0.28 * d + 0.08) mkRow(z + 7 + Math.random() * 2, d, safe);
+  const lowLanes = row.filter(r => r.type === 'low').map(r => r.lane), used = new Set(row.map(r => r.lane));
+  const cv = Math.floor(Math.random() * 6);
   if (lowLanes.length && Math.random() < 0.55) {
     const lane = pick(lowLanes), n = 5;
-    for (let i = 0; i < n; i++) things.push({ kind: 'card', cat, name: cardName(cat), lane, z: z + 0.5 + (i - 2) * 1.7, h: 0.5 + 0.95 * Math.sin(Math.PI * i / (n - 1)), ph: Math.random() * 6 });
+    for (let i = 0; i < n; i++) things.push({ kind: 'card', v: (cv + i) % 6, lane, z: z + 0.5 + (i - 2) * 1.7, h: 0.5 + 0.95 * Math.sin(Math.PI * i / (n - 1)), ph: Math.random() * 6 });
   }
   const lane = pick(lanes), n = 5, zc = z + lastSpacing * 0.5;
-  for (let i = 0; i < n; i++) things.push({ kind: 'card', cat, name: cardName(cat), lane, z: zc + (i - 2) * 2.2, h: 0.5, ph: Math.random() * 6 });
+  for (let i = 0; i < n; i++) things.push({ kind: 'card', v: (cv + i + 2) % 6, lane, z: zc + (i - 2) * 2.2, h: 0.5, ph: Math.random() * 6 });
   const free = lanes.filter(l => !used.has(l));
   if (G.t > 8 && free.length && Math.random() < 0.08) things.push({ kind: 'power', ptype: pick(Object.keys(POWERS)), lane: pick(free), z: z + 3, h: 0.6, ph: Math.random() * 6 });
 }
@@ -549,17 +545,16 @@ function collect(th) {
     pop_(pw.name + '!', pw.col); return;
   }
   G.cards++; G.streak++;
-  if (G.streak % 4 === 0 && G.mult < 5) { G.mult++; pop_('Combo x' + G.mult, C.lime); }
+  if (G.streak % 4 === 0 && G.mult < 5) { G.mult++; G.maxMult = Math.max(G.maxMult, G.mult); pop_('Combo x' + G.mult, C.lime); }
   const pts = 10 * G.mult * (G.x2 > 0 ? 2 : 1); G.cardPts += pts;
-  const c = G.counts[th.name] || (G.counts[th.name] = { n: 0, kind: th.cat }); c.n++;
-  pop_('+' + pts + ' ' + th.name, th.cat === 'tech' ? '#7ff0e0' : '#ffb4a8'); sfx('card', G.streak);
+  pop_('+' + pts, '#ffffff'); burst(th.lane * LW, th.h * PH, 0, CARD_COLS[th.v], 12); sfx('card', G.streak);
 }
 function hitPlayer() {
   if (G.invuln > 0) return;
   if (G.shield) { G.shield = false; G.invuln = 1; G.shake = 10; sfx('shield'); pop_('¡Escudo Pomodoro!', '#ff9a90'); return; }
   G.streak = 0; G.mult = 1;
   if (G.chase > 0) { caught(); return; }
-  G.chase = 9; G.invuln = 1.5; G.stumble = 1; G.shake = 14; sfx('hit'); roar(); say(pick(SAY_CLOSE), 2.4);
+  G.chaseMax = Math.max(5, 9 - (G.level - 1) * 0.6); G.chase = G.chaseMax; G.invuln = 1.5; G.stumble = 1; G.shake = 14; sfx('hit'); roar(); say(pick(SAY_CLOSE), 2.4);
 }
 
 function update(dt) {
@@ -570,9 +565,13 @@ function update(dt) {
     caughtT -= dt; if (caughtT <= 0) endGame(); return;
   }
   G.t += dt;
-  const base = 9 + Math.min(11, G.t * 0.17);
+  const lv = 1 + Math.floor(G.t / 18);
+  if (lv !== G.level) { G.level = lv; pop_('¡NIVEL ' + lv + '!', '#ffd23f'); showHint('Nivel ' + lv + ': más velocidad y más obstáculos', 2200); sfx('power'); setTheme((lv - 1) % 4); burst(P.lx * LW, 1.2, 0, '#ffd23f', 18); }
+  const base = 9 + Math.min(17, G.t * 0.2);
   const v = base * (G.slow > 0 ? 0.62 : 1) * (1 - 0.35 * clamp(G.stumble, 0, 1));
-  G.stumble = Math.max(0, G.stumble - dt / 1.2); G.dist += v * dt;
+  G.stumble = Math.max(0, G.stumble - dt / 1.2); G.dist += v * dt; G.v = v;
+  if (P.y <= 0.001 && Math.random() < dt * 30) dust(P.lx * LW, 0.08, 0.3);
+  partStep(dt, v);
   P.roll += ((P.tl - P.lx) - P.roll) * Math.min(1, dt * 10);
   P.lx += (P.tl - P.lx) * Math.min(1, dt * 13);
   if (P.y > 0 || P.vy > 0) { P.vy -= 17 * dt; P.y += P.vy * dt; if (P.y <= 0) { P.y = 0; P.vy = 0; if (P.qSlide) { P.qSlide = false; P.slide = 0.7; } } }
@@ -597,30 +596,50 @@ let hc = {};
 function setT(id, v) { if (hc[id] !== v) { hc[id] = v; $(id).textContent = v; } }
 function updateHud() {
   setT('vScore', G.score); setT('vDist', Math.floor(G.dist)); setT('vCards', G.cards); setT('vMult', 'x' + G.mult);
-  const near = G.chase > 0; setT('chaseLbl', near ? '¡SABLE TE SIGUE!' : 'SABLE: LEJOS'); $('chaseFill').style.width = (near ? clamp(G.chase / 9, 0, 1) * 100 : 0) + '%';
-  let pw = ''; if (G.shield) pw += '<span class="chip">🍅 Escudo</span>'; if (G.x2 > 0) pw += '<span class="chip">⭐ x2 · ' + Math.ceil(G.x2) + ' s</span>'; if (G.slow > 0) pw += '<span class="chip">🫧 Calma · ' + Math.ceil(G.slow) + ' s</span>';
+  const near = G.chase > 0; setT('chaseLbl', near ? '¡SABLE TE SIGUE!' : 'SABLE: LEJOS'); $('chaseFill').style.width = (near ? clamp(G.chase / G.chaseMax, 0, 1) * 100 : 0) + '%';
+  let pw = '<span class="chip">🏁 Nivel ' + G.level + '</span>'; if (G.shield) pw += '<span class="chip">🍅 Escudo</span>'; if (G.x2 > 0) pw += '<span class="chip">⭐ x2 · ' + Math.ceil(G.x2) + ' s</span>'; if (G.slow > 0) pw += '<span class="chip">🫧 Calma · ' + Math.ceil(G.slow) + ' s</span>';
   if (hc.pw !== pw) { hc.pw = pw; $('powers').innerHTML = pw; }
 }
 
 /* ============================================================
    ESCENA 3D
    ============================================================ */
+/* ---------- partículas ---------- */
+let PARTS = [];
+function burst(x, y, z, col, n) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, sp = 2 + Math.random() * 3.5; PARTS.push({ x, y, z, vx: Math.cos(a) * sp, vy: 1.5 + Math.random() * 3.5, vz: Math.sin(a) * sp * 0.8, t: 0, life: 0.55 + Math.random() * 0.3, col, s: 0.07 + Math.random() * 0.07, g: 9 }); } if (PARTS.length > 220) PARTS.splice(0, PARTS.length - 220); }
+function dust(x, y, z) { PARTS.push({ x: x + (Math.random() - .5) * 0.5, y, z: z + 0.3, vx: (Math.random() - .5) * 0.8, vy: 0.5 + Math.random() * 0.8, vz: 0, t: 0, life: 0.45, col: '#ffffff', s: 0.1, g: 0, dust: 1 }); }
+function partStep(dt, v) { for (const p of PARTS) { p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= p.g * dt; p.z += (p.vz + v) * dt; if (p.y < 0.02 && p.g) { p.y = 0.02; p.vy *= -0.3; } } PARTS = PARTS.filter(p => p.t < p.life); }
+/* ---------- temas de color por nivel (día, atardecer, noche, neón) ---------- */
+const THEMES = [
+  { hor: C.sky, top: C.blue, gr: '#2fd18b', sun: C.sun, night: 0, cloud: 1 },
+  { hor: '#ffb37a', top: '#8a4dff', gr: '#27b87d', sun: '#ff6f91', night: 0.2, cloud: 0.8 },
+  { hor: '#5b3fd0', top: '#0a1038', gr: '#1c8f6c', sun: '#e6f1ff', night: 1, cloud: 0.25 },
+  { hor: '#ff6ad5', top: '#2a1b7a', gr: '#18a89a', sun: '#7ffcff', night: 0.7, cloud: 0.4 }
+];
+const mkTh = t => ({ hor: rgb(t.hor).slice(), top: rgb(t.top).slice(), gr: rgb(t.gr).slice(), sun: rgb(t.sun).slice(), night: t.night, cloud: t.cloud });
+let TH = mkTh(THEMES[0]), THT = THEMES[0];
+function setTheme(i) { THT = THEMES[i]; }
+function themeStep(dt) { const k = Math.min(1, dt * 0.9), T = { hor: rgb(THT.hor), top: rgb(THT.top), gr: rgb(THT.gr), sun: rgb(THT.sun) };
+  ['hor', 'top', 'gr', 'sun'].forEach(n => { for (let i = 0; i < 3; i++) TH[n][i] += (T[n][i] - TH[n][i]) * k; });
+  TH.night += (THT.night - TH.night) * k; TH.cloud += (THT.cloud - TH.cloud) * k; }
 const BCOL = ['#ff2e93', '#ffd23f', '#7b5cff', '#12c8b4', '#ff8a3d', '#ff6b5a', '#4fc3ff'];
 
 function drawSky() {
   gl.disable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.depthMask(false);
+  gl.uniform3f(U.uFogCol, TH.hor[0], TH.hor[1], TH.hor[2]); gl.uniform3f(U.uSkyTop, TH.top[0], TH.top[1], TH.top[2]);
   gl.uniform1f(U.uMode, 2); push(); M = m4.id(); draw(MESH.plane, '#ffffff', { unlit: true }); pop(); gl.uniform1f(U.uMode, 0);
   gl.enable(gl.CULL_FACE);
-  part(MESH.sph, C.sun, 75, 46, -260, 15, 15, 15, 0, 0, 0, { unlit: true, nofog: true, line: 1.1 });
+  if (TH.night > 0.3) for (let i = 0; i < 46; i++) { const sx = (hash(i * 3) - 0.5) * 420, sy = 30 + hash(i * 5 + 1) * 70, tw = 0.6 + 0.4 * Math.sin(time * 3 + i); part(MESH.sphLo, '#ffffff', sx, sy, -300, 0.9 * tw, 0.9 * tw, 0.9 * tw, 0, 0, 0, { unlit: true, nofog: true }); }
+  part(MESH.sph, TH.sun, 75, 46, -260, 15, 15, 15, 0, 0, 0, { unlit: true, nofog: true, line: 1.1 });
   for (let i = 0; i < 6; i++) {
     const x = ((i * 83 + time * (1.5 + i * 0.3)) % 420) - 210, y = 36 + (i % 3) * 9, z = -230 + (i % 2) * 20;
-    [[0, 0, 12], [11, -1, 9], [-11, -2, 8]].forEach(([dx, dy, r]) => part(MESH.sphLo, '#ffffff', x + dx, y + dy, z, r, r * 0.55, r * 0.6, 0, 0, 0, { unlit: true, nofog: true, a: 0.95 }));
+    [[0, 0, 12], [11, -1, 9], [-11, -2, 8]].forEach(([dx, dy, r]) => part(MESH.sphLo, '#ffffff', x + dx, y + dy, z, r, r * 0.55, r * 0.6, 0, 0, 0, { unlit: true, nofog: true, a: 0.95 * TH.cloud }));
   }
   gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
 }
 function drawWorld() {
   const d = G.dist;
-  part(MESH.plane, '#2fd18b', 0, -0.03, -90, 400, 400, 1, -Math.PI / 2, 0, 0);
+  part(MESH.plane, TH.gr, 0, -0.03, -90, 400, 400, 1, -Math.PI / 2, 0, 0);
   part(MESH.plane, '#cfdcff', 0, -0.02, -90, 9.6, 400, 1, -Math.PI / 2, 0, 0);
   part(MESH.plane, '#ffffff', 0, 0, -90, 6.6, 400, 1, -Math.PI / 2, 0, 0, { tex: texRoad(), uv: [1, 400 / 6, 0, d / 6] });
   for (const s of [-1, 1]) part(MESH.plane, '#ffffff', s * 3.55, 0.005, -90, 0.5, 400, 1, -Math.PI / 2, 0, 0, { tex: texCurb(), uv: [1, 400 / 6, 0, d / 6] });
@@ -631,10 +650,14 @@ function drawWorld() {
       const hh = hash(i * 7 + s * 13), hb = (1.3 + hash(i * 3 + s * 5 + 11) * 2.4) * PH, col = BCOL[Math.floor(hh * BCOL.length)];
       part(MESH.box, col, s * 8.4, hb / 2, zc, 6, hb, 7.8, 0, 0, 0, { line: 0.07 });
       part(MESH.plane, '#ffffff', s * 5.38, hb / 2, zc, 7.4, hb - 0.4, 1, 0, s * Math.PI / 2, 0, { tex: texWin(), uv: [7.4 / 2.6, (hb - 0.4) / 1.6, 0, 0], unlit: true, cut: 0.4 });
+      if (hh > 0.45) { part(MESH.box, hh > 0.75 ? '#7ffcff' : '#ffe14a', s * 8.4, hb + 0.18, zc, 4.2, 0.3, 0.5, 0, 0, 0, { unlit: true }); part(MESH.cyl, '#ffffff', s * 9.6, hb + 0.9, zc, 0.07, 1.6, 0.07, 0, 0, 0); part(MESH.sphLo, '#ff2e93', s * 9.6, hb + 1.8, zc, 0.16, 0.16, 0.16, 0, 0, 0, { unlit: true }); }
+      part(MESH.box, hh > 0.5 ? '#ff2e93' : '#7ffcff', s * 5.36, 0.35, zc, 0.12, 0.12, 7.2, 0, 0, 0, { unlit: true });
       const hb2 = (2.6 + hash(i * 11 + s * 3 + 7) * 5) * PH;
       part(MESH.box, BCOL[Math.floor(hash(i * 5 + s) * BCOL.length)], s * 18, hb2 / 2, zc, 10, hb2, 7.8, 0, 0, 0);
     }
   }
+  const sp = clamp(((G.v || 9) - 11) / 14, 0, 1);
+  if (sp > 0.02 && state === 'play') for (let i = 0; i < 22; i++) { const x = (hash(i * 7) - 0.5) * 8.4, y = 0.3 + hash(i * 11) * 3.2, z = -(((i * 17.3 + d * 1.7) % 70) + 4); qpart(MESH.box, '#ffffff', x, y, z, 0.035, 0.035, 2.2 + sp * 3.5, 0, 0, 0, { unlit: true, a: 0.5 * sp, cut: 0.01 }); }
   const l1 = Math.floor((d + 120) / 12), l0 = Math.floor((d - 6) / 12);
   for (let i = l1; i >= l0; i--) {
     const zc = -(i * 12 - d);
@@ -666,7 +689,8 @@ function drawThings() {
     } else if (th.kind === 'card') {
       const yc = th.h * PH + Math.sin(time * 4 + th.ph) * 0.05, a = time * 3 + th.ph;
       qpart(MESH.plane, '#ffffff', x, 0.03, zw, 0.5, 0.5, 1, -Math.PI / 2, 0, 0, { tex: texBlob(), unlit: true, cut: 0.01 });
-      const tx = texCard(th.name, th.cat);
+      const tx = texCard(th.v);
+      qpart(MESH.sph, CARD_COLS[th.v], x, yc, zw, 0.62, 0.62, 0.62, 0, 0, 0, { unlit: true, a: 0.22, cut: 0.01 });
       for (const f of [0, Math.PI]) part(MESH.plane, '#ffffff', x, yc, zw, 0.66, 0.88, 1, 0, a + f, 0, { tex: tx, unlit: true, cut: 0.3 });
     } else if (th.kind === 'power') {
       const pw = POWERS[th.ptype], yc = th.h * PH + Math.sin(time * 5 + th.ph) * 0.07, a = time * 4 + th.ph;
@@ -775,14 +799,15 @@ function drawSable() {
 function render() {
   const asp = W / H, port = asp < 1;
   const fov = clamp(2 * Math.atan(Math.tan(0.47) / clamp(asp, 0.35, 1.2)), 0.95, 1.45);
-  const shk = G.shake * 0.02, cxp = P.lx * LW * 0.55 + (Math.random() - .5) * shk, cyp = (port ? 5.6 : 4.1) + (Math.random() - .5) * shk, czp = port ? 8.8 : 6.6;
+  const fovX = fov + clamp(((G.v || 9) - 9) / 17, 0, 1) * 0.12;
+  const shk = G.shake * 0.02 + clamp(((G.v || 9) - 18) / 8, 0, 1) * 0.01, cxp = P.lx * LW * 0.55 + (Math.random() - .5) * shk, cyp = (port ? 5.6 : 4.1) + (Math.random() - .5) * shk, czp = port ? 8.8 : 6.6;
   CAM = [cxp, cyp, czp];
-  VP = m4.mul(m4.persp(fov, asp, 0.1, 400), m4.look(CAM, [P.lx * LW * 0.3, 0.9, -7], [0, 1, 0]));
+  VP = m4.mul(m4.persp(fovX, asp, 0.1, 400), m4.look(CAM, [P.lx * LW * 0.3, 0.9, -7], [0, 1, 0]));
   gl.uniformMatrix4fv(U.uVP, false, VP); gl.uniform3f(U.uCam, CAM[0], CAM[1], CAM[2]); gl.uniform2f(U.uRes, cv.width, cv.height);
   const hor = project(0, 0, -400); gl.uniform1f(U.uHor, clamp(1 - hor.y / H, 0.05, 0.9));
-  gl.clearColor(FOG[0], FOG[1], FOG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  themeStep(Math.min(frameDt, 0.1)); gl.clearColor(TH.hor[0], TH.hor[1], TH.hor[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   curTex = null; M = m4.id(); MS.length = 0; gl.uniform1f(U.uOutline, 0); gl.uniform4f(U.uUV, 1, 1, 0, 0); gl.uniform1f(U.uMode, 0); gl.uniform1f(U.uTexMode, 0);
-  drawSky(); drawWorld(); drawThings(); drawAmati(); drawSable(); flushQ();
+  drawSky(); drawWorld(); drawThings(); drawAmati(); drawSable(); for (const p of PARTS) { const k = 1 - p.t / p.life; qpart(MESH.sphLo, p.col, p.x, p.y, -p.z, p.s * (p.dust ? 1 + p.t * 4 : 1) * (0.4 + k), p.s * (p.dust ? 1 + p.t * 4 : 1) * (0.4 + k), p.s * (p.dust ? 1 + p.t * 4 : 1) * (0.4 + k), 0, 0, 0, { unlit: true, a: p.dust ? 0.4 * k : k, cut: 0.01 }); } flushQ();
   drawFx();
 }
 function drawFx() {
@@ -792,6 +817,7 @@ function drawFx() {
   for (const p of pops) { const s = project(p.wx, p.wy, p.wz); if (!s.ok) continue; fx.globalAlpha = clamp(1.1 - p.t, 0, 1); fx.lineWidth = 5; fx.strokeStyle = C.navy; fx.strokeText(p.txt, s.x, s.y); fx.fillStyle = p.col; fx.fillText(p.txt, s.x, s.y); }
   fx.globalAlpha = 1;
   if (S_.sayT > 0 && S_.say && S_.show > 0.1) { const sp = sablePos(), s = project(sp.x, 3.1, sp.z); if (s.ok) drawBubble(S_.say, clamp(s.x, 10, W - 10), s.y, Math.min(1, S_.sayT * 3)); }
+  if (G.chase > 0 && state === 'play') { const pl = 0.18 + 0.1 * Math.sin(time * 9), g = fx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.72); g.addColorStop(0, 'rgba(255,40,70,0)'); g.addColorStop(1, 'rgba(255,40,70,' + pl + ')'); fx.fillStyle = g; fx.fillRect(0, 0, W, H); }
   if (G.slow > 0 && state === 'play') { fx.fillStyle = 'rgba(127,230,255,.13)'; fx.fillRect(0, 0, W, H); }
   if (G.x2 > 0 && state === 'play') { const g = fx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.4, W / 2, H / 2, Math.max(W, H) * 0.75); g.addColorStop(0, 'rgba(255,210,63,0)'); g.addColorStop(1, 'rgba(255,210,63,.28)'); fx.fillStyle = g; fx.fillRect(0, 0, W, H); }
 }
@@ -853,10 +879,10 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) { if 
 addEventListener('blur', () => { if (state === 'play') pauseGame(); });
 setMuted(muted); updateMenuBest();
 
-let last = performance.now();
+let last = performance.now(), frameDt = 0.016;
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt; frameDt = dt;
   pollPad(); update(dt); render();
 }
 requestAnimationFrame(frame);

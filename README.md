@@ -1,7 +1,7 @@
 # Amati corre
 
 Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). Requiere un navegador con WebGL.
-Amati corre, atrapa **técnicas** y **herramientas** de estudio en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un colibrí zoomorfo con alas que aletean; Sable corre con brazos y piernas animados.
+Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un colibrí zoomorfo con alas que aletean; Sable corre con brazos y piernas animados.
 
 ## Cómo se juega
 
@@ -11,6 +11,8 @@ Amati corre, atrapa **técnicas** y **herramientas** de estudio en lugar de mone
 - **Sable:** el primer choque la acerca durante 9 segundos y rompe tu combo. Un segundo choque en ese lapso, y te atrapa (fin de la partida). Si aguantas sin chocar, se aleja.
 - **Poderes:** Pomodoro (escudo contra un choque), Feynman (puntos dobles, 8 s) y Respiración (todo más lento, 6 s).
 - **Combo:** cada 4 tarjetas seguidas sube el multiplicador, hasta x5. Un choque lo reinicia.
+
+- **Niveles:** cada 18 s sube el nivel: más velocidad, más obstáculos, filas dobles y Sable te sigue durante menos tiempo. El cielo cambia (día, atardecer, noche, neón). La partida termina cuando Sable te atrapa.
 
 ## Abrirlo
 
@@ -28,5 +30,5 @@ assets/sable.png       Imagen de Sable (pantalla de inicio y emblema; opcional)
 
 ## Personalización
 
-Las listas `TECH` y `TOOLS` (inicio del `<script>`) contienen los nombres de las tarjetas, y `SAY_*` las frases de Sable. Cambia los nombres por los del repositorio de Amati si es necesario.
+`CARD_COLS` define los colores de las tarjetas, `THEMES` los cielos por nivel y `SAY_*` las frases de Sable.
 Los personajes 3D se construyen con piezas procedimentales. La música y los sonidos se sintetizan con Web Audio; no hay archivos de audio. El juego no recopila datos ni usa servidor; solo guarda en el dispositivo la mejor puntuación y la preferencia de sonido.
