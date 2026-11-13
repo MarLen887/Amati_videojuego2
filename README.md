@@ -1,7 +1,7 @@
 # Amati corre
 
-Videojuego tipo *runner* de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias.
-Amati corre, atrapa **técnicas** y **herramientas** de estudio en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue.
+Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). Requiere un navegador con WebGL.
+Amati corre, atrapa **técnicas** y **herramientas** de estudio en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un colibrí zoomorfo con alas que aletean; Sable corre con brazos y piernas animados.
 
 ## Cómo se juega
 
@@ -21,12 +21,12 @@ Amati corre, atrapa **técnicas** y **herramientas** de estudio en lugar de mone
 
 ```
 index.html        Juego completo (HTML + CSS + JavaScript)
-assets/amati.png  Imagen de Amati (opcional; si falta, se dibuja en el lienzo)
-assets/sable.png  Imagen de Sable (opcional; si falta, se dibuja en el lienzo)
+assets/amati-logo.jpg  Logo de Amati (pantalla de inicio; opcional)
+assets/sable.png       Imagen de Sable (pantalla de inicio y emblema; opcional)
 .nojekyll         Evita el procesamiento de Jekyll en GitHub Pages
 ```
 
 ## Personalización
 
 Las listas `TECH` y `TOOLS` (inicio del `<script>`) contienen los nombres de las tarjetas, y `SAY_*` las frases de Sable. Cambia los nombres por los del repositorio de Amati si es necesario.
-La música y los sonidos se sintetizan con Web Audio; no hay archivos de audio. El juego no recopila datos ni usa servidor; solo guarda en el dispositivo la mejor puntuación y la preferencia de sonido.
+Los personajes 3D se construyen con piezas procedimentales. La música y los sonidos se sintetizan con Web Audio; no hay archivos de audio. El juego no recopila datos ni usa servidor; solo guarda en el dispositivo la mejor puntuación y la preferencia de sonido.
