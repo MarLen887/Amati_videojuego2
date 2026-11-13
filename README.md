@@ -1,13 +1,13 @@
 # Amati corre
 
-Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). Requiere un navegador con WebGL.
-Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un colibrí zoomorfo con alas que aletean; Sable corre con brazos y piernas animados.
+Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). La ciudad tiene canales, casas con tiendas y balcones, puentes, botes y vías de tren; los bloques altos son vagones. Requiere un navegador con WebGL.
+Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un corredor humano original (sudadera, gorro, mochila y tenis en los colores de Amati) que corre, salta y se agacha; Sable corre con brazos y piernas animados.
 
 ## Cómo se juega
 
 - **Carriles:** ← → (o A / D). **Saltar:** ↑ o Espacio. **Deslizar:** ↓. **Pausa:** P o Esc. **Sonido:** M.
 - **Táctil:** desliza el dedo en cualquier dirección. **Control:** stick o cruceta, A para empezar, Start para pausar.
-- **Obstáculos:** bloques bajos (se saltan), pancartas de notificaciones (se pasan deslizando) y bloques altos (se esquivan cambiando de carril).
+- **Obstáculos:** bloques bajos (se saltan), pancartas de notificaciones (se pasan agachándose con ↓) y vagones de tren (se esquivan cambiando de carril).
 - **Sable:** el primer choque la acerca durante 9 segundos y rompe tu combo. Un segundo choque en ese lapso, y te atrapa (fin de la partida). Si aguantas sin chocar, se aleja.
 - **Poderes:** Pomodoro (escudo contra un choque), Feynman (puntos dobles, 8 s) y Respiración (todo más lento, 6 s).
 - **Combo:** cada 4 tarjetas seguidas sube el multiplicador, hasta x5. Un choque lo reinicia.

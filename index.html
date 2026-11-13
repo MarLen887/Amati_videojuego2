@@ -327,8 +327,36 @@ const texCard = v => TEX['c' + v] || (TEX['c' + v] = mkTex(256, 340, (x, w, h) =
   g2.fillStyle = 'rgba(255,255,255,.9)'; for (let i = 0; i < 2; i++) { g2.beginPath(); g2.roundRect ? g2.roundRect(40, 260 + i * 34, i ? 120 : 176, 16, 8) : g2.rect(40, 260 + i * 34, 120, 16); g2.fill(); }
 }));
 const texWin = () => TEX.win || (TEX.win = mkTex(128, 128, () => { rr(22, 20, 84, 88, 12); fs('#fff3a0', 6); g2.fillStyle = 'rgba(255,255,255,.55)'; g2.fillRect(30, 28, 22, 70); }, true));
-const texRoad = () => TEX.road || (TEX.road = mkTex(256, 256, (x, w, h) => { g2.fillStyle = C.road; g2.fillRect(0, 0, w, h); g2.fillStyle = '#2b3470'; for (let i = 0; i < 70; i++) g2.fillRect(Math.random() * w, Math.random() * h, 3, 3);
-  g2.fillStyle = C.lime; const lw = 6, p = 2 / 6.6; [0.5 - p / 2 * 1, 0.5 + p / 2 * 1].forEach(u => g2.fillRect(u * w - lw / 2, 0, lw, h * 0.5)); }, true));
+// vías de tren: balasto, durmientes y dos rieles por carril
+const texRoad = () => TEX.road || (TEX.road = mkTex(256, 256, (x, w, h) => { g2.fillStyle = '#2a2f55'; g2.fillRect(0, 0, w, h); g2.fillStyle = '#343a66'; for (let i = 0; i < 90; i++) g2.fillRect(Math.random() * w, Math.random() * h, 3, 2);
+  for (const l of [-1, 0, 1]) { const cu = (0.5 + l * 2 / 6.6) * w, hw = 0.64 / 6.6 * w;
+    g2.fillStyle = '#8b6a52'; for (let k = 0; k < 8; k++) g2.fillRect(cu - 0.85 / 6.6 * w, k * h / 8 + 6, 1.7 / 6.6 * w, h / 8 * 0.4);
+    g2.fillStyle = '#4a4f78'; [-1, 1].forEach(r => g2.fillRect(cu + r * hw - 4, 0, 8, h));
+    g2.fillStyle = '#dfe6f7'; [-1, 1].forEach(r => g2.fillRect(cu + r * hw - 2, 0, 4, h)); } }, true));
+const texWater = () => TEX.water || (TEX.water = mkTex(128, 128, (x, w, h) => { const g = g2.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#2aa7e0'); g.addColorStop(1, '#1d86c9'); g2.fillStyle = g; g2.fillRect(0, 0, w, h);
+  g2.strokeStyle = 'rgba(255,255,255,.55)'; g2.lineWidth = 3; g2.lineCap = 'round'; for (let r = 0; r < 4; r++) { g2.beginPath(); for (let i = 0; i <= 8; i++) { const px = i * 16, py = 16 + r * 32 + Math.sin(i * 1.6 + r) * 4; i ? g2.lineTo(px, py) : g2.moveTo(px, py); } g2.stroke(); } }, true));
+const SHUT = ['#2f8f83', '#c95b45', '#3b6fb5', '#8a5fc9'], AWN = [['#e1805d', '#ffffff'], ['#3f9a92', '#ffffff'], ['#ff2e93', '#ffe9f3'], ['#ffb400', '#ffffff']];
+// una planta de casa: dos ventanas con contraventanas, marco y jardinera
+const texFacade = v => TEX['f' + v] || (TEX['f' + v] = mkTex(256, 256, (x, w, h) => {
+  for (let k = 0; k < 2; k++) { const ox = k * 128;
+    g2.fillStyle = SHUT[v % 4]; g2.fillRect(ox + 10, 34, 18, 150); g2.fillRect(ox + 100, 34, 18, 150);
+    g2.fillStyle = '#fff6e0'; g2.fillRect(ox + 26, 28, 76, 162);
+    const g = g2.createLinearGradient(0, 36, 0, 182); g.addColorStop(0, '#9fdcff'); g.addColorStop(1, '#4a8fd0'); g2.fillStyle = g; g2.fillRect(ox + 33, 36, 62, 146);
+    g2.fillStyle = 'rgba(255,255,255,.55)'; g2.beginPath(); g2.moveTo(ox + 40, 40); g2.lineTo(ox + 62, 40); g2.lineTo(ox + 40, 90); g2.closePath(); g2.fill();
+    g2.fillStyle = '#fff6e0'; g2.fillRect(ox + 62, 36, 5, 146); g2.fillRect(ox + 33, 100, 62, 5);
+    g2.fillStyle = '#b5523b'; g2.fillRect(ox + 24, 192, 80, 22);
+    g2.fillStyle = '#2e9a4a'; g2.fillRect(ox + 24, 186, 80, 10);
+    ['#ff2e93', '#ffd23f', '#ff6b5a', '#ffffff'].forEach((c, i) => { g2.fillStyle = c; g2.beginPath(); g2.arc(ox + 36 + i * 18, 184, 7, 0, 7); g2.fill(); }); }
+}, true));
+// planta baja: toldo a rayas, dos escaparates y puerta
+const texShop = v => TEX['s' + v] || (TEX['s' + v] = mkTex(256, 128, (x, w, h) => {
+  const [c1, c2] = AWN[v % 4];
+  for (let i = 0; i < 12; i++) { g2.fillStyle = i % 2 ? c2 : c1; g2.fillRect(i * w / 12, 6, w / 12 + 1, 34); }
+  g2.fillStyle = c1; for (let i = 0; i < 12; i++) { g2.beginPath(); g2.arc(i * w / 12 + w / 24, 40, w / 24, 0, Math.PI); g2.fill(); }
+  const win = (x0, w0) => { g2.fillStyle = '#4a3a30'; g2.fillRect(x0 - 5, 56, w0 + 10, 66); g2.fillStyle = '#ffe9a8'; g2.fillRect(x0, 61, w0, 56); g2.fillStyle = 'rgba(255,255,255,.5)'; g2.fillRect(x0 + 6, 66, 10, 46); };
+  win(14, 76); win(166, 76);
+  g2.fillStyle = '#4a3a30'; g2.fillRect(106, 50, 44, 78); g2.fillStyle = SHUT[v % 4]; g2.fillRect(111, 56, 34, 72); g2.fillStyle = '#ffd23f'; g2.beginPath(); g2.arc(138, 92, 3.5, 0, 7); g2.fill();
+}));
 const texCurb = () => TEX.curb || (TEX.curb = mkTex(64, 128, (x, w, h) => { g2.fillStyle = C.mag; g2.fillRect(0, 0, w, h / 2); g2.fillStyle = '#fff'; g2.fillRect(0, h / 2, w, h / 2); }, true));
 const texBlob = () => TEX.blob || (TEX.blob = mkTex(64, 64, (x, w) => { const g = g2.createRadialGradient(32, 32, 2, 32, 32, 30); g.addColorStop(0, 'rgba(11,20,55,.55)'); g.addColorStop(1, 'rgba(11,20,55,0)'); g2.fillStyle = g; g2.fillRect(0, 0, 64, 64); }));
 const texNote = () => TEX.note || (TEX.note = mkTex(128, 128, () => { rr(10, 10, 108, 108, 16); fs(A.cream, 5); g2.strokeStyle = A.teal; g2.lineWidth = 7; g2.lineCap = 'round';
@@ -531,7 +559,7 @@ function collisions() {
       if (th.z > 0.8 || th.z < -0.8 || dl > 0.55) continue;
       if (bot <= th.h + 0.3 && top >= th.h - 0.3) { th.dead = true; collect(th); }
     } else {
-      if (th.z > 0.4 || th.z < -1.4 || dl > 0.58) continue;
+      if (th.z > 0.4 || th.z < (th.type === 'wall' ? -6.6 : -1.4) || dl > 0.58) continue;
       let bad = false;
       if (th.type === 'wall') bad = true; else if (th.type === 'low') bad = bot < 0.46; else bad = !sl;
       if (bad) { th.hit = true; hitPlayer(); }
@@ -586,7 +614,7 @@ function update(dt) {
   if (G.spawnAcc >= lastSpacing) { G.spawnAcc -= lastSpacing; spawnRow(); }
   for (const th of things) th.z -= v * dt;
   collisions();
-  things = things.filter(t => t.z > -3 && !t.dead);
+  things = things.filter(t => t.z > (t.type === 'wall' ? -8 : -3) && !t.dead);
   popsStep(dt);
   G.score = Math.floor(G.dist) + G.cardPts; G.shake = Math.max(0, G.shake - dt * 30);
   updateHud();
@@ -622,8 +650,7 @@ function setTheme(i) { THT = THEMES[i]; }
 function themeStep(dt) { const k = Math.min(1, dt * 0.9), T = { hor: rgb(THT.hor), top: rgb(THT.top), gr: rgb(THT.gr), sun: rgb(THT.sun) };
   ['hor', 'top', 'gr', 'sun'].forEach(n => { for (let i = 0; i < 3; i++) TH[n][i] += (T[n][i] - TH[n][i]) * k; });
   TH.night += (THT.night - TH.night) * k; TH.cloud += (THT.cloud - TH.cloud) * k; }
-const BCOL = ['#ff2e93', '#ffd23f', '#7b5cff', '#12c8b4', '#ff8a3d', '#ff6b5a', '#4fc3ff'];
-
+const WALL = ['#f3d9a4', '#f4b08a', '#e98f7a', '#a9d6e5', '#f2c6d4', '#cfe3a8', '#fbe38a', '#b9c7f0'], ROOF = ['#b5523b', '#7a4a3a', '#4a5d6b', '#9c3d3d'];
 function drawSky() {
   gl.disable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.depthMask(false);
   gl.uniform3f(U.uFogCol, TH.hor[0], TH.hor[1], TH.hor[2]); gl.uniform3f(U.uSkyTop, TH.top[0], TH.top[1], TH.top[2]);
@@ -638,35 +665,75 @@ function drawSky() {
   gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
 }
 function drawWorld() {
-  const d = G.dist;
-  part(MESH.plane, TH.gr, 0, -0.03, -90, 400, 400, 1, -Math.PI / 2, 0, 0);
-  part(MESH.plane, '#cfdcff', 0, -0.02, -90, 9.6, 400, 1, -Math.PI / 2, 0, 0);
-  part(MESH.plane, '#ffffff', 0, 0, -90, 6.6, 400, 1, -Math.PI / 2, 0, 0, { tex: texRoad(), uv: [1, 400 / 6, 0, d / 6] });
-  for (const s of [-1, 1]) part(MESH.plane, '#ffffff', s * 3.55, 0.005, -90, 0.5, 400, 1, -Math.PI / 2, 0, 0, { tex: texCurb(), uv: [1, 400 / 6, 0, d / 6] });
+  const d = G.dist, PI = Math.PI, FL = -PI / 2;
+  part(MESH.plane, TH.gr, 0, -0.03, -90, 400, 400, 1, FL, 0, 0);
+  part(MESH.plane, '#cfdcff', 0, -0.02, -90, 9.6, 400, 1, FL, 0, 0);
+  part(MESH.plane, '#ffffff', 0, 0, -90, 6.6, 400, 1, FL, 0, 0, { tex: texRoad(), uv: [1, 400 / 6, 0, d / 6] });
+  for (const s of [-1, 1]) {
+    part(MESH.plane, '#ffffff', s * 3.55, 0.005, -90, 0.5, 400, 1, FL, 0, 0, { tex: texCurb(), uv: [1, 400 / 6, 0, d / 6] });
+    part(MESH.plane, '#ffffff', s * 6.75, 0.012, -90, 3.7, 400, 1, FL, 0, 0, { tex: texWater(), uv: [1, 400 / 8, 0, d / 8 - time * 0.03] });   // canal
+    part(MESH.box, '#c4bdb0', s * 4.95, 0.12, -90, 0.3, 0.24, 400);
+    part(MESH.box, '#a39c8f', s * 8.55, 0.1, -90, 0.2, 0.2, 400);
+    part(MESH.box, '#ffffff', s * 4.95, 0.66, -90, 0.05, 0.05, 400, 0, 0, 0, { unlit: true });
+  }
+  const q1 = Math.floor((d + 100) / 4), q0 = Math.floor((d - 4) / 4);
+  for (let i = q1; i >= q0; i--) for (const s of [-1, 1]) part(MESH.cyl, '#ffffff', s * 4.95, 0.4, -(i * 4 - d), 0.07, 0.56, 0.07);
+  // casas de la ribera
   const i1 = Math.floor((d + 125) / 8), i0 = Math.floor((d - 8) / 8);
   for (let i = i1; i >= i0; i--) {
     const zc = -(i * 8 - d + 4);
     for (const s of [-1, 1]) {
-      const hh = hash(i * 7 + s * 13), hb = (1.3 + hash(i * 3 + s * 5 + 11) * 2.4) * PH, col = BCOL[Math.floor(hh * BCOL.length)];
-      part(MESH.box, col, s * 8.4, hb / 2, zc, 6, hb, 7.8, 0, 0, 0, { line: 0.07 });
-      part(MESH.plane, '#ffffff', s * 5.38, hb / 2, zc, 7.4, hb - 0.4, 1, 0, s * Math.PI / 2, 0, { tex: texWin(), uv: [7.4 / 2.6, (hb - 0.4) / 1.6, 0, 0], unlit: true, cut: 0.4 });
-      if (hh > 0.45) { part(MESH.box, hh > 0.75 ? '#7ffcff' : '#ffe14a', s * 8.4, hb + 0.18, zc, 4.2, 0.3, 0.5, 0, 0, 0, { unlit: true }); part(MESH.cyl, '#ffffff', s * 9.6, hb + 0.9, zc, 0.07, 1.6, 0.07, 0, 0, 0); part(MESH.sphLo, '#ff2e93', s * 9.6, hb + 1.8, zc, 0.16, 0.16, 0.16, 0, 0, 0, { unlit: true }); }
-      part(MESH.box, hh > 0.5 ? '#ff2e93' : '#7ffcff', s * 5.36, 0.35, zc, 0.12, 0.12, 7.2, 0, 0, 0, { unlit: true });
-      const hb2 = (2.6 + hash(i * 11 + s * 3 + 7) * 5) * PH;
-      part(MESH.box, BCOL[Math.floor(hash(i * 5 + s) * BCOL.length)], s * 18, hb2 / 2, zc, 10, hb2, 7.8, 0, 0, 0);
+      const h1 = hash(i * 7 + s * 13), h2 = hash(i * 3 + s * 5 + 11), h3 = hash(i * 5 + s * 17 + 3), v = Math.floor(h1 * 4);
+      const floors = 2 + (h2 > 0.6 ? 1 : 0), hb = floors * 2.4, wall = WALL[Math.floor(h1 * 8)], bx = s * 11.6, ra = 0.55, ro = ROOF[Math.floor(h3 * 4)];
+      part(MESH.box, wall, bx, hb / 2, zc, 6, hb, 7.8, 0, 0, 0, { line: 0.07 });
+      part(MESH.plane, '#ffffff', s * 8.59, 1.2, zc, 7.4, 2.4, 1, 0, -s * PI / 2, 0, { tex: texShop(Math.floor(h2 * 4)), unlit: true, cut: 0.4 });
+      part(MESH.plane, '#ffffff', s * 8.59, 2.4 + (hb - 2.4) / 2, zc, 7.4, hb - 2.4, 1, 0, -s * PI / 2, 0, { tex: texFacade(v), uv: [2, (hb - 2.4) / 2.4, 0, 0], unlit: true, cut: 0.4 });
+      part(MESH.box, AWN[Math.floor(h2 * 4)][0], s * 8.1, 2.2, zc, 0.9, 0.1, 7.2, 0, 0, s * 0.3, { line: 0.03 });
+      part(MESH.box, ro, bx - s * 1.5, hb + 0.92, zc, 3.7, 0.32, 8, 0, 0, s * ra, { line: 0.05 });     // techo a dos aguas
+      part(MESH.box, ro, bx + s * 1.5, hb + 0.92, zc, 3.7, 0.32, 8, 0, 0, -s * ra, { line: 0.05 });
+      part(MESH.box, wall, bx, hb + 0.8, zc - 3.95, 5.6, 1.6, 0.2);
+      part(MESH.box, wall, bx, hb + 0.8, zc + 3.95, 5.6, 1.6, 0.2);
+      if (h1 > 0.55) { part(MESH.box, '#8a4a3a', bx - s * 0.6, hb + 2.0, zc + 1.2, 0.6, 1.2, 0.6, 0, 0, 0, { line: 0.04 }); }
+      if (h2 > 0.4) { part(MESH.box, '#c4bdb0', s * 8.2, 2.5, zc, 0.9, 0.12, 3.0, 0, 0, 0, { line: 0.03 }); part(MESH.box, '#1b2a4a', s * 7.78, 2.95, zc, 0.05, 0.5, 3.0, 0, 0, 0, { unlit: true }); }
+      // segunda fila: edificios altos y torres
+      const f2 = 3 + Math.floor(hash(i * 11 + s * 3 + 7) * 3), hb2 = f2 * 2.4, w2 = WALL[Math.floor(hash(i * 5 + s) * 8)];
+      part(MESH.box, w2, s * 22, hb2 / 2, zc, 10, hb2, 7.8, 0, 0, 0, { line: 0.05 });
+      part(MESH.plane, '#ffffff', s * 16.98, hb2 / 2 + 1.2, zc, 7.4, hb2 - 2.4, 1, 0, -s * PI / 2, 0, { tex: texFacade((v + 1) % 4), uv: [2, (hb2 - 2.4) / 2.4, 0, 0], unlit: true, cut: 0.4 });
+      part(MESH.box, '#6b5a50', s * 22, hb2 + 0.15, zc, 10.4, 0.3, 8.2);
+      if (hash(i * 13 + s * 7) > 0.86) { part(MESH.box, w2, s * 22, hb2 + 4, zc, 3.4, 8, 3.4, 0, 0, 0, { line: 0.05 }); part(MESH.cone, '#9c3d3d', s * 22, hb2 + 10.2, zc, 4.4, 4.4, 4.4, 0, 0, 0, { line: 0.05 }); part(MESH.sph, '#ffe9a8', s * 20.25, hb2 + 6, zc, 0.8, 0.8, 0.2, 0, 0, 0, { unlit: true }); }
     }
   }
-  const sp = clamp(((G.v || 9) - 11) / 14, 0, 1);
-  if (sp > 0.02 && state === 'play') for (let i = 0; i < 22; i++) { const x = (hash(i * 7) - 0.5) * 8.4, y = 0.3 + hash(i * 11) * 3.2, z = -(((i * 17.3 + d * 1.7) % 70) + 4); qpart(MESH.box, '#ffffff', x, y, z, 0.035, 0.035, 2.2 + sp * 3.5, 0, 0, 0, { unlit: true, a: 0.5 * sp, cut: 0.01 }); }
+  // puentes peatonales sobre la calle
+  const b1 = Math.floor((d + 125) / 90), b0 = Math.floor((d - 10) / 90);
+  for (let k = b1; k >= b0; k--) {
+    const zc = -(k * 90 - d + 40);
+    part(MESH.box, '#c9b8a3', 0, 7.2, zc, 19.5, 0.7, 3.6, 0, 0, 0, { line: 0.05 });
+    part(MESH.box, '#a8957f', 0, 7.75, zc + 1.6, 19.5, 0.5, 0.25);
+    part(MESH.box, '#a8957f', 0, 7.75, zc - 1.6, 19.5, 0.5, 0.25);
+    for (const s of [-1, 1]) part(MESH.box, '#c9b8a3', s * 4.95, 3.4, zc, 0.9, 7.2, 2.4, 0, 0, 0, { line: 0.05 });
+    part(MESH.plane, '#ffffff', 0, 6.5, zc + 1.9, 2.2, 2.2, 1, 0, 0, 0, { tex: texNote(), unlit: true, cut: 0.3 });
+  }
+  // botes en el canal
+  const j1 = Math.floor((d + 125) / 38), j0 = Math.floor((d - 10) / 38);
+  for (let j = j1; j >= j0; j--) {
+    const zc = -(j * 38 - d + 9), s = hash(j * 3 + 1) > 0.5 ? 1 : -1, c = [C.coral, C.teal, C.sun, C.violet][Math.floor(hash(j) * 4)], bob = Math.sin(time * 2 + j) * 0.04;
+    part(MESH.box, c, s * 6.7, 0.2 + bob, zc, 1.3, 0.4, 3.4, 0, 0, 0, { line: 0.04 });
+    part(MESH.box, '#ffffff', s * 6.7, 0.65 + bob, zc - 0.3, 0.9, 0.5, 1.3, 0, 0, 0, { line: 0.04 });
+  }
+  // farolas
   const l1 = Math.floor((d + 120) / 12), l0 = Math.floor((d - 6) / 12);
   for (let i = l1; i >= l0; i--) {
     const zc = -(i * 12 - d);
     for (const s of [-1, 1]) {
-      part(MESH.cyl, '#ffffff', s * 4.5, 1.5, zc, 0.08, 3, 0.08, 0, 0, 0, { line: 0.03 });
-      part(MESH.sph, C.sun, s * 3.95, 3.05, zc, 0.22, 0.28, 0.28, 0, 0, 0, { unlit: true, line: 0.03 });
+      part(MESH.cyl, '#2b3560', s * 4.4, 1.5, zc, 0.1, 3, 0.1, 0, 0, 0, { line: 0.03 });
+      part(MESH.box, '#2b3560', s * 4.05, 3.0, zc, 0.7, 0.07, 0.07, 0, 0, 0);
+      part(MESH.sph, C.sun, s * 3.75, 2.85, zc, 0.25, 0.3, 0.25, 0, 0, 0, { unlit: true, line: 0.03 });
     }
   }
+  const sp = clamp(((G.v || 9) - 11) / 14, 0, 1);
+  if (sp > 0.02 && state === 'play') for (let i = 0; i < 22; i++) { const x = (hash(i * 7) - 0.5) * 8.4, y = 0.3 + hash(i * 11) * 3.2, z = -(((i * 17.3 + d * 1.7) % 70) + 4); qpart(MESH.box, '#ffffff', x, y, z, 0.035, 0.035, 2.2 + sp * 3.5, 0, 0, 0, { unlit: true, a: 0.5 * sp, cut: 0.01 }); }
 }
+const PI_2 = Math.PI / 2;
 function drawThings() {
   for (const th of things) {
     if (th.z > 112) continue;
@@ -677,14 +744,20 @@ function drawThings() {
         part(MESH.box, C.mag, x, 0.375, zw - 0.5, 1.72, 0.75, 1, 0, 0, 0, { line: 0.05 });
         part(MESH.plane, '#ffffff', x, 0.4, zw + 0.02, 0.62, 0.62, 1, 0, 0, 0, { tex: texIcon(th.icon), unlit: true });
       } else if (th.type === 'wall') {
-        part(MESH.box, C.violet, x, 1.125, zw - 0.5, 1.8, 2.25, 1, 0, 0, 0, { line: 0.05 });
-        part(MESH.box, C.sun, x, 2.0, zw + 0.02, 1.82, 0.16, 0.06, 0, 0, 0);
-        part(MESH.plane, '#ffffff', x, 1.1, zw + 0.03, 1.2, 1.2, 1, 0, 0, 0, { tex: texIcon(th.icon), unlit: true });
+        const tc = [A.teal, A.coral, C.violet, C.mag][th.lane + 1 + (th.icon.length % 2)] || A.teal;
+        part(MESH.box, tc, x, 1.125, zw - 3.2, 1.8, 2.25, 6.4, 0, 0, 0, { line: 0.05 });         // vagón
+        part(MESH.box, '#e9eef8', x, 2.3, zw - 3.2, 1.7, 0.18, 6.2, 0, 0, 0);                      // techo
+        part(MESH.box, '#22305e', x, 1.55, zw + 0.02, 1.35, 0.75, 0.06, 0, 0, 0, { unlit: true }); // parabrisas
+        part(MESH.box, A.peach, x, 0.95, zw + 0.02, 1.82, 0.14, 0.06, 0, 0, 0);
+        for (const sx of [-1, 1]) {
+          part(MESH.sph, '#fff6a8', x + sx * 0.6, 0.55, zw + 0.04, 0.16, 0.16, 0.08, 0, 0, 0, { unlit: true });
+          part(MESH.plane, '#ffffff', x + sx * 0.905, 1.5, zw - 3.2, 6.0, 0.6, 1, 0, sx * PI_2, 0, { tex: texWin(), uv: [6 / 1.2, 1, 0, 0], unlit: true, cut: 0.4 });
+        }
       } else {
-        for (const sx of [-1, 1]) part(MESH.cyl, '#ffffff', x + sx * 0.94, 1.275, zw - 0.5, 0.14, 2.55, 0.14, 0, 0, 0, { line: 0.04 });
-        part(MESH.box, C.sun, x, 2.4, zw - 0.5, 2.0, 0.28, 0.3, 0, 0, 0, { line: 0.04 });
-        part(MESH.box, '#ff8a3d', x, 1.33, zw - 0.5, 1.8, 0.8, 0.2, 0, 0, 0, { line: 0.04 });
-        part(MESH.plane, '#ffffff', x, 1.33, zw - 0.39, 0.7, 0.7, 1, 0, 0, 0, { tex: texIcon('bell'), unlit: true });
+        for (const sx of [-1, 1]) part(MESH.cyl, '#ffffff', x + sx * 0.94, 1.5, zw - 0.5, 0.14, 3.0, 0.14, 0, 0, 0, { line: 0.04 });
+        part(MESH.box, C.sun, x, 2.9, zw - 0.5, 2.0, 0.28, 0.3, 0, 0, 0, { line: 0.04 });
+        part(MESH.box, '#ff8a3d', x, 1.75, zw - 0.5, 1.8, 0.8, 0.2, 0, 0, 0, { line: 0.04 });
+        part(MESH.plane, '#ffffff', x, 1.75, zw - 0.39, 0.7, 0.7, 1, 0, 0, 0, { tex: texIcon('bell'), unlit: true });
       }
     } else if (th.kind === 'card') {
       const yc = th.h * PH + Math.sin(time * 4 + th.ph) * 0.05, a = time * 3 + th.ph;
@@ -702,48 +775,86 @@ function drawThings() {
   }
 }
 
-/* ---------- Amati: colibrí 3D con alas que aletean ---------- */
-function wing(side, ang, sweep) {
-  push(); T(side * 0.27, 0.14, -0.05); RY(-side * sweep); RZ(side * ang);
-  part(MESH.sph, A.deep, side * 0.58, 0, 0.04, 0.70, 0.06, 0.42, 0, 0, side * 0.04, { line: 0.035 });
-  part(MESH.sph, A.dark, side * 0.70, 0.014, 0.16, 0.55, 0.06, 0.30, 0, 0, side * 0.04, { line: 0.03 });
-  part(MESH.sph, A.teal, side * 0.40, 0.035, -0.04, 0.44, 0.06, 0.32, 0, 0, 0, { line: 0.03 });
-  part(MESH.sph, A.peach, side * 0.34, 0.0, 0.18, 0.34, 0.05, 0.24, 0, side * 0.2, 0, { line: 0.025 });
-  part(MESH.plane, '#ffffff', side * 0.50, 0.09, -0.02, 0.46, 0.36, 1, -Math.PI / 2, 0, side * 0.15, { tex: texNote(), unlit: true, cut: 0.3 });
-  pop();
-}
+/* ---------- Amati: corredor humano 3D con ropa de Amati (diseño original) ---------- */
 function drawAmati() {
-  const sl = sliding(), air = P.y > 0.001, x = P.lx * LW;
-  const spin = state === 'caught' ? S_.lunge : 0;
-  const y = P.y * PH + (sl ? 0.42 : 0.74) - spin * 0.35 + Math.sin(P.phase * 0.7) * 0.03;
+  const sl = sliding(), x = P.lx * LW, air = P.y > 0.001, st = clamp(G.stumble, 0, 1);
+  const spin = state === 'caught' ? S_.lunge : 0, caught = state === 'caught';
   qpart(MESH.plane, '#ffffff', x, 0.035, 0, 0.9 * (1 - Math.min(P.y, 1) * 0.3), 0.9 * (1 - Math.min(P.y, 1) * 0.3), 1, -Math.PI / 2, 0, 0, { tex: texBlob(), unlit: true, cut: 0.01 });
   if (G.invuln > 0 && Math.floor(time * 16) % 2 === 0) return;
-  const flapSpd = air ? 34 : 26, flap = Math.sin(time * flapSpd) * (sl ? 0.3 : 0.6), baseA = sl ? 0.1 : 0.12;
-  push(); T(x, y, 0);
-  RZ(-P.roll * 0.45 + spin * 6.28); RY(-P.roll * 0.25); RX(sl ? -0.75 : (air ? 0.1 : -0.08) + Math.sin(time * 9) * 0.03);
-  S(1.3, 1.3, 1.3);
-  const L = { line: 0.04 };
-  part(MESH.sph, A.teal, 0, 0, 0, 0.34, 0.31, 0.50, 0, 0, 0, L);
-  part(MESH.sph, A.peach, 0, -0.08, -0.07, 0.29, 0.25, 0.42, 0, 0, 0, L);
-  part(MESH.sph, A.dark, 0, 0.1, 0.1, 0.26, 0.17, 0.34, 0.15, 0, 0, { line: 0.02 });
-  part(MESH.sph, A.teal, 0, 0.2, -0.5, 0.3, 0.29, 0.29, 0, 0, 0, L);
-  part(MESH.sph, A.peach, 0, 0.08, -0.62, 0.22, 0.17, 0.2, 0, 0, 0, { line: 0.02 });
-  part(MESH.cone, A.dark, 0, 0.5, -0.44, 0.1, 0.24, 0.1, 0.9, 0, 0, { line: 0.02 });
+  const SKIN = '#c98b5e', HAIR = '#2b1b17', L = { line: 0.04 };
+  const rise = air && P.vy > 0, fall = air && P.vy <= 0;
+  const ph = P.phase * 0.9, sw = Math.sin(ph), bob = air || sl ? 0 : Math.abs(Math.sin(ph)) * 0.08;
+  const stretch = air ? 1 + clamp(Math.abs(P.vy) * 0.012, 0, 0.08) : 1;
+  push(); T(x, P.y * PH + bob, 0);
+  RZ(-P.roll * 0.3); RY(-P.roll * 0.35 + spin * Math.PI);
+  if (sl) RX(-0.5);                                                                    // deslizamiento: se agacha y se inclina al frente
+  else if (caught) RX(-0.25);
+  else RX(-0.1 - st * 0.35 - (rise ? 0.12 : 0));                                      // inclinación al correr / tropiezo
+  S(0.95, (sl ? 0.5 : 0.92) * stretch, 0.95);
+  // piernas
   for (const s of [-1, 1]) {
-    part(MESH.sph, '#ffffff', s * 0.17, 0.25, -0.7, 0.095, 0.095, 0.05, 0, s * 0.35, 0, { line: 0.02 });
-    part(MESH.sph, A.deep, s * 0.17, 0.25, -0.745, 0.06, 0.065, 0.03, 0, s * 0.35, 0, { unlit: true });
-    part(MESH.sph, '#ffffff', s * 0.16, 0.285, -0.765, 0.022, 0.02, 0.02, 0, 0, 0, { unlit: true });
-    part(MESH.sph, A.peach, s * 0.24, 0.12, -0.62, 0.08, 0.05, 0.04, 0, s * 0.5, 0, { unlit: true });
+    let t = s * sw * 1.0, k = -0.3 - 0.8 * Math.max(0, -t);
+    if (sl) { t = 1.0 + s * 0.25; k = -1.5; }
+    else if (rise) { t = s > 0 ? 1.25 : -0.35; k = s > 0 ? -1.35 : -0.9; }
+    else if (fall) { t = s * 0.45 + 0.1; k = -0.35; }
+    else if (caught) { t = s * Math.sin(time * 12) * 0.5; k = -0.4; }
+    push(); T(s * 0.16, 0.95, 0); RX(t);
+    part(MESH.cyl, A.deep, 0, -0.23, 0, 0.23, 0.5, 0.23, 0, 0, 0, L);
+    T(0, -0.46, 0); RX(k);
+    part(MESH.cyl, A.deep, 0, -0.2, 0, 0.2, 0.42, 0.2, 0, 0, 0, L);
+    part(MESH.cyl, A.coral, 0, -0.33, 0, 0.22, 0.1, 0.22, 0, 0, 0);               // puño del pantalón
+    part(MESH.sph, A.coral, 0, -0.45, -0.08, 0.25, 0.16, 0.38, 0, 0, 0, L);          // tenis grandes
+    part(MESH.box, A.cream, 0, -0.54, -0.08, 0.25, 0.06, 0.38, 0, 0, 0);
+    part(MESH.sph, A.peach, 0, -0.42, -0.24, 0.12, 0.08, 0.1, 0, 0, 0);
+    pop();
   }
-  part(MESH.cone, A.beak, 0, 0.18, -1.1, 0.065, 0.78, 0.065, -Math.PI / 2 + 0.08, 0, 0, { line: 0.025 });
-  wing(1, baseA + flap, 0.3); wing(-1, baseA + flap, 0.3);
-  const tailW = Math.sin(time * 6) * 0.05;
-  part(MESH.sph, A.coral, 0.0, -0.02, 0.74, 0.12, 0.04, 0.55, 0, tailW, 0, L);
-  part(MESH.sph, A.peach, -0.16, 0.0, 0.70, 0.12, 0.04, 0.5, 0, 0.4 + tailW, 0, L);
-  part(MESH.sph, A.teal, 0.16, 0.0, 0.70, 0.12, 0.04, 0.5, 0, -0.4 + tailW, 0, L);
-  part(MESH.plane, '#ffffff', 0, 0.06, 0.72, 0.26, 0.26, 1, -Math.PI / 2, 0, 0, { tex: texNote(), unlit: true, cut: 0.3 });
-  for (const s of [-1, 1]) part(MESH.sphLo, A.beak, s * 0.1, -0.31, -0.02, 0.06, 0.05, 0.08, 0, 0, 0, { line: 0.02 });
-  if (G.shield) qpart(MESH.sph, '#ff5a4d', 0, 0, 0, 1.1, 1.0, 1.15, 0, 0, 0, { unlit: true, a: 0.2, cut: 0.01 });
+  // torso: sudadera
+  part(MESH.cyl, A.teal, 0, 1.3, 0, 0.68, 0.7, 0.46, 0, 0, 0, L);
+  part(MESH.cyl, A.peach, 0, 1.0, 0, 0.64, 0.07, 0.44, 0, 0, 0);
+  part(MESH.cyl, A.cream, 0, 0.95, 0, 0.6, 0.06, 0.41, 0, 0, 0);
+  part(MESH.box, A.peach, -0.3, 1.3, -0.2, 0.05, 0.55, 0.02, 0, 0, 0, { unlit: true });
+  part(MESH.box, A.peach, 0.3, 1.3, -0.2, 0.05, 0.55, 0.02, 0, 0, 0, { unlit: true });
+  part(MESH.sph, A.dark, 0, 1.62, 0.16, 0.34, 0.2, 0.2, 0, 0, 0, L);                  // capucha
+  // mochila con alitas de colibrí
+  part(MESH.box, A.coral, 0, 1.3, 0.34, 0.46, 0.56, 0.24, 0, 0, 0, L);
+  part(MESH.plane, '#ffffff', 0, 1.3, 0.47, 0.34, 0.34, 1, 0, 0, 0, { tex: texNote(), unlit: true, cut: 0.3 });
+  for (const sx of [-1, 1]) part(MESH.box, A.dark, sx * 0.2, 1.52, 0.2, 0.09, 0.5, 0.05, 0, 0, 0);   // tirantes
+  // brazos
+  for (const s of [-1, 1]) {
+    let a = -s * sw * 1.1, e = 0.9, z = 0.15;
+    if (sl) { a = -1.1; e = 0.1; z = 0.35; }
+    else if (rise) { a = 2.7; e = 0.15; z = 0.18; }
+    else if (fall) { a = 0.9; e = 0.3; z = 0.9; }
+    else if (caught) { a = 2.6 + Math.sin(time * 14 + s) * 0.3; e = 0.2; }
+    else a = -s * sw * 1.1;
+    push(); T(s * 0.4, 1.55, 0); RX(a); RZ(s * z);
+    part(MESH.cyl, A.teal, 0, -0.16, 0, 0.2, 0.34, 0.2, 0, 0, 0, L);
+    T(0, -0.32, 0); RX(e);
+    part(MESH.cyl, A.teal, 0, -0.16, 0, 0.18, 0.32, 0.18, 0, 0, 0, L);
+    part(MESH.cyl, A.peach, 0, -0.3, 0, 0.19, 0.05, 0.19, 0, 0, 0);
+    part(MESH.sph, SKIN, 0, -0.4, 0, 0.18, 0.18, 0.18, 0, 0, 0, L);
+    pop();
+  }
+  // cabeza
+  push(); T(0, 2.05 + Math.sin(ph * 2) * 0.015, 0); S(1.28, 1.28, 1.28);
+  part(MESH.cyl, SKIN, 0, 0.2 - 0.38, 0, 0.14, 0.14, 0.14, 0, 0, 0);
+  part(MESH.sph, SKIN, 0, 0, -0.01, 0.58, 0.58, 0.54, 0, 0, 0, L);
+  part(MESH.sph, HAIR, 0, 0.04, 0.1, 0.6, 0.5, 0.42, 0, 0, 0, L);                    // cabello (se ve de espaldas)
+  for (const s of [-1, 1]) {
+    part(MESH.sph, '#ffffff', s * 0.14, 0.04, -0.27, 0.12, 0.13, 0.06, 0, 0, 0, { unlit: true });
+    part(MESH.sph, '#17120f', s * 0.14, 0.03, -0.31, 0.06, 0.08, 0.04, 0, 0, 0, { unlit: true });
+    part(MESH.sph, SKIN, s * 0.31, 0, 0, 0.12, 0.16, 0.12, 0, 0, 0);
+  }
+  part(MESH.box, '#7a3b2b', 0, -0.13, -0.29, 0.14, 0.022, 0.02, 0, 0, 0, { unlit: true });
+  part(MESH.cyl, A.dark, 0, 0.27, -0.02, 0.62, 0.22, 0.58, 0, 0, 0, L);              // gorro
+  part(MESH.sph, A.dark, 0, 0.4, -0.02, 0.58, 0.28, 0.54, 0, 0, 0, L);
+  part(MESH.cyl, A.peach, 0, 0.19, -0.02, 0.64, 0.07, 0.6, 0, 0, 0);
+  part(MESH.sph, A.coral, 0, 0.58, -0.02, 0.14, 0.14, 0.14, 0, 0, 0, L);
+  const pt = Math.sin(time * 9) * 0.25 * (sl ? 0.3 : 1);                               // coleta que se balancea
+  part(MESH.sph, A.coral, 0, 0.08, 0.3, 0.12, 0.12, 0.12, 0, 0, 0, L);
+  for (let i = 0; i < 3; i++) part(MESH.sph, HAIR, Math.sin(time * 9 - i) * 0.12 * (i + 1) * 0.6 + pt * 0.1, 0.0 - i * 0.14, 0.36 + i * 0.1, 0.16 - i * 0.02, 0.16 - i * 0.02, 0.2, 0, 0, 0, L);
+  pop();
+  if (G.shield) qpart(MESH.sph, '#ff5a4d', 0, 1.1, 0, 1.2, 1.5, 1.2, 0, 0, 0, { unlit: true, a: 0.2, cut: 0.01 });
   pop();
 }
 
@@ -758,8 +869,9 @@ function drawSable() {
   push(); T(sp.x, bob, sp.z); RY(Math.PI * face); S(0.88, 0.88, 0.88); RX(-0.12 * run);
   for (const s of [-1, 1]) {                                                           // piernas
     push(); T(s * 0.17, 0.66, 0); RX(s * sw * 1.0);
-    part(MESH.cyl, gray, 0, -0.28, 0, 0.19, 0.6, 0.19, 0, 0, 0, L);
-    part(MESH.sph, gray2, 0, -0.6, -0.07, 0.17, 0.1, 0.25, 0, 0, 0, L);
+    part(MESH.cyl, gray, 0, -0.28, 0, 0.24, 0.6, 0.24, 0, 0, 0, L);
+    part(MESH.sph, gray2, 0, -0.6, -0.08, 0.26, 0.15, 0.36, 0, 0, 0, L);
+    part(MESH.box, '#ff9a1f', 0, -0.68, -0.08, 0.26, 0.05, 0.36, 0, 0, 0);
     pop();
   }
   part(MESH.cyl, black, 0, 0.98, 0, 0.62, 0.7, 0.5, 0, 0, 0, L);                       // camiseta
@@ -771,24 +883,27 @@ function drawSable() {
     part(MESH.cyl, black, 0, -0.14, 0, 0.2, 0.3, 0.2, 0, 0, 0, L);
     part(MESH.cyl, '#ff9a1f', 0, -0.27, 0, 0.21, 0.05, 0.21, 0, 0, 0);
     part(MESH.cyl, gray, 0, -0.42, 0, 0.17, 0.26, 0.17, 0, 0, 0, L);
-    part(MESH.sph, gray, 0, -0.58, 0, 0.14, 0.13, 0.14, 0, 0, 0, L);
+    part(MESH.sph, gray, 0, -0.6, 0, 0.2, 0.19, 0.2, 0, 0, 0, L);
     pop();
   }
-  for (let i = 0; i < 4; i++) part(MESH.sphLo, gray, Math.sin(time * 5 + i * 0.8) * 0.12 * (i + 1) * 0.5, 0.78 + i * 0.1, 0.34 + i * 0.16, 0.09 - i * 0.008, 0.09 - i * 0.008, 0.09 - i * 0.008, 0, 0, 0, { line: 0.02 }); // cola
-  push(); T(0, 1.78 + Math.sin(ph_ * 2.6) * 0.02, 0);                                  // cabeza
+  for (let i = 0; i < 4; i++) part(MESH.sphLo, gray, Math.sin(time * 5 + i * 0.8) * 0.12 * (i + 1) * 0.5, 0.78 + i * 0.1, 0.34 + i * 0.16, 0.13 - i * 0.012, 0.13 - i * 0.012, 0.13 - i * 0.012, 0, 0, 0, { line: 0.02 }); // cola
+  part(MESH.sph, '#ff9a1f', Math.sin(time * 5 + 3.2) * 0.3, 1.18, 0.98, 0.14, 0.14, 0.14, 0, 0, 0, { line: 0.02 });
+  push(); T(0, 1.9 + Math.sin(ph_ * 2.6) * 0.02, 0); S(1.28, 1.28, 1.28);             // cabeza grande
   part(MESH.sph, gray, 0, 0, 0, 0.56, 0.5, 0.5, 0, 0, 0, L);
   for (const s of [-1, 1]) {
     part(MESH.cone, gray, s * 0.32, 0.42, 0.0, 0.2, 0.28, 0.12, 0, 0, -s * 0.35, L);
     part(MESH.cone, '#ff7aa8', s * 0.32, 0.4, -0.05, 0.1, 0.16, 0.04, 0, 0, -s * 0.35, { unlit: true });
-    part(MESH.sph, '#ffffff', s * 0.2, 0.06, -0.4, 0.17, 0.19, 0.08, 0, 0, 0, { line: 0.02 });
-    part(MESH.sph, '#111111', s * 0.2 - s * 0.02, 0.04, -0.46, 0.07, 0.09, 0.04, 0, 0, 0, { unlit: true });
+    part(MESH.sph, '#ffffff', s * 0.2, 0.06, -0.4, 0.22, 0.26, 0.08, 0, 0, 0, { line: 0.02 });
+    part(MESH.sph, '#111111', s * 0.2 - s * 0.02, 0.04, -0.46, 0.1, 0.13, 0.04, 0, 0, 0, { unlit: true });
+    part(MESH.sph, '#ffffff', s * 0.2 - s * 0.04, 0.09, -0.49, 0.035, 0.035, 0.02, 0, 0, 0, { unlit: true });
+    part(MESH.sph, '#ff7aa8', s * 0.36, -0.1, -0.33, 0.12, 0.08, 0.04, 0, 0, 0, { unlit: true });
     part(MESH.box, gray2, s * 0.2, 0.24, -0.4, 0.24, 0.05, 0.05, 0, 0, s * 0.35, { unlit: true });
     for (const k of [-1, 0, 1]) part(MESH.box, '#222222', s * 0.4, -0.14 + k * 0.05, -0.38, 0.28, 0.012, 0.012, 0, 0, s * k * 0.12, { unlit: true });
   }
   part(MESH.sph, '#6a6a72', 0, -0.12, -0.38, 0.2, 0.13, 0.11, 0, 0, 0);
   part(MESH.sph, '#2f8cff', 0, -0.06, -0.47, 0.085, 0.065, 0.06, 0, 0, 0, { line: 0.02 });
   part(MESH.box, '#111111', 0, -0.22, -0.47, 0.1, 0.02, 0.02, 0, 0, 0, { unlit: true });
-  part(MESH.cyl, '#1b3fa0', 0, 0.42, 0.0, 0.5, 0.15, 0.42, 0.06, 0, 0, L);           // gorra de policía
+  part(MESH.cyl, '#1b3fa0', 0, 0.42, 0.0, 0.56, 0.17, 0.48, 0.06, 0, 0, L);           // gorra de policía
   part(MESH.cyl, '#0e2466', 0, 0.35, -0.22, 0.46, 0.04, 0.28, 0, 0, 0, { line: 0.025 });
   part(MESH.sph, C.sun, 0, 0.43, -0.28, 0.07, 0.07, 0.03, 0, 0, 0, { unlit: true, line: 0.015 });
   pop();
