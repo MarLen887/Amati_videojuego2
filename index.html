@@ -433,7 +433,7 @@ let state = 'menu';
 let time = 0, caughtT = 0;
 let G, P, S_, things = [], pops = [], lastSpacing = 20;
 const BEST_KEY = 'amatiCorreMejor', SKIN_KEY = 'amatiCorreEstilos';
-let SKA = 0, SKS = 0; try { const k = (localStorage.getItem(SKIN_KEY) || '0,0').split(','); SKA = clamp(+k[0] || 0, 0, 2); SKS = clamp(+k[1] || 0, 0, 1); } catch (e) {}
+let SKA = 2, SKS = 0; try { const k = (localStorage.getItem(SKIN_KEY) || '2,0').split(','); SKA = clamp(+k[0] || 0, 0, 2); SKS = clamp(+k[1] || 0, 0, 1); } catch (e) {}
 let best = 0; try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
 function newG() { return { level: 1, maxMult: 1, v: 9, t: 0, dist: 0, cardPts: 0, score: 0, cards: 0, streak: 0, mult: 1, shield: false, x2: 0, slow: 0, chase: 0, invuln: 0, stumble: 0, spawnAcc: -16, shake: 0, counts: {}, chaseMax: 9 }; }
 function newP() { return { lx: 0, tl: 0, y: 0, vy: 0, slide: 0, qSlide: false, phase: 0, face: 1, roll: 0 }; }
