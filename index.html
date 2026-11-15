@@ -447,7 +447,7 @@ let G, P, S_, things = [], pops = [], lastSpacing = 20;
 const BEST_KEY = 'amatiCorreMejor', SKIN_KEY = 'amatiCorreEstilos';
 let SKA = 2, SKS = 0; try { const k = (localStorage.getItem(SKIN_KEY) || '2,0').split(','); SKA = clamp(+k[0] || 0, 0, 2); SKS = clamp(+k[1] || 0, 0, 1); } catch (e) {}
 let best = 0; try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
-function newG() { return { level: 1, maxMult: 1, v: 9, t: 0, dist: 0, cardPts: 0, score: 0, cards: 0, streak: 0, mult: 1, shield: false, x2: 0, slow: 0, chase: 0, invuln: 0, stumble: 0, spawnAcc: -16, shake: 0, counts: {}, chaseMax: 9 }; }
+function newG() { return { lastSafe: null, level: 1, maxMult: 1, v: 9, t: 0, dist: 0, cardPts: 0, score: 0, cards: 0, streak: 0, mult: 1, shield: false, x2: 0, slow: 0, chase: 0, invuln: 0, stumble: 0, spawnAcc: -16, shake: 0, counts: {}, chaseMax: 9 }; }
 function newP() { return { lx: 0, tl: 0, y: 0, vy: 0, slide: 0, qSlide: false, phase: 0, face: 1, roll: 0 }; }
 function newS() { return { show: 0, lx: 0, off: 0.9, say: '', sayT: 0, lunge: 0 }; }
 G = newG(); P = newP(); S_ = newS();
@@ -557,13 +557,17 @@ function doJump() { if (state !== 'play' || P.y > 0.001) return; P.vy = 6.4; P.y
 function doSlide() { if (state !== 'play') return; if (P.y > 0.001) { P.vy = -13; P.qSlide = true; } else P.slide = 0.7; sfx('slide'); }
 
 const ICONS = ['chat', 'heart', 'bell', 'play', 'phone', 'at'];
-function mkRow(z, d, safeNear) {
+// Crea una fila de obstáculos. Siempre deja un carril libre (safe) que está a lo sumo a un carril del carril libre
+// anterior, para que baste un solo cambio de carril; las filas completas de bloques bajos o pancartas se pueden saltar o pasar deslizando.
+function mkRow(z, d, prevSafe, allowFull) {
   const lanes = [-1, 0, 1], row = [];
-  const safe = safeNear == null ? pick(lanes) : pick(lanes.filter(l => Math.abs(l - safeNear) <= 1));
-  if (safeNear == null && Math.random() < 0.3 * (1 - d * 0.6)) {
-    const t = Math.random() < 0.5 ? 'low' : 'high', n = Math.random() < 0.5 ? 3 : 2;
-    shuffle(lanes).slice(0, n).forEach(l => row.push({ lane: l, type: t }));
+  let safe;
+  if (allowFull && Math.random() < 0.3 * (1 - d * 0.6)) {
+    const t = Math.random() < 0.5 ? 'low' : 'high';
+    lanes.forEach(l => row.push({ lane: l, type: t }));
+    safe = prevSafe == null ? 0 : prevSafe;
   } else {
+    safe = prevSafe == null ? pick(lanes) : pick(lanes.filter(l => Math.abs(l - prevSafe) <= 1));
     lanes.forEach(l => { if (l === safe || Math.random() > 0.55 + 0.42 * d) return; const r = Math.random(); row.push({ lane: l, type: r < 0.4 + 0.25 * d ? 'wall' : (r < 0.72 ? 'low' : 'high') }); });
   }
   row.forEach(o => things.push({ kind: 'obs', type: o.type, lane: o.lane, z, icon: pick(ICONS) }));
@@ -571,8 +575,13 @@ function mkRow(z, d, safeNear) {
 }
 function spawnRow() {
   const z = 78, d = Math.min(1, G.t / 40), lanes = [-1, 0, 1];
-  const { row, safe } = mkRow(z, d, null);
-  if (G.t > 15 && Math.random() < 0.28 * d + 0.08) mkRow(z + 7 + Math.random() * 2, d, safe);
+  const { row, safe } = mkRow(z, d, G.lastSafe, true);
+  G.lastSafe = safe;
+  // fila doble: solo después de que termine el cuerpo de los vagones (6.6) más una distancia de reacción proporcional a la velocidad
+  if (G.t > 15 && Math.random() < 0.28 * d + 0.08) {
+    const z2 = z + 6.6 + 2 + 0.5 * (G.v || 11);
+    G.lastSafe = mkRow(z2, d, safe, false).safe; G.spawnAcc -= (z2 - z);
+  }
   const lowLanes = row.filter(r => r.type === 'low').map(r => r.lane), used = new Set(row.map(r => r.lane));
   const cv = Math.floor(Math.random() * 6);
   if (lowLanes.length && Math.random() < 0.55) {
@@ -1047,7 +1056,7 @@ function frame(now) {
   pollPad(); update(dt); if (state === 'menu') previews(); render();
 }
 requestAnimationFrame(frame);
-window.__amati = { get G() { return G; }, get P() { return P; }, get S() { return S_; }, get things() { return things; }, get state() { return state; }, startGame, moveL, moveR, doJump, doSlide, setSkin(a, s) { SKA = a; SKS = s; }, setState(x) { state = x; } };
+window.__amati = { get G() { return G; }, get P() { return P; }, get S() { return S_; }, get things() { return things; }, get state() { return state; }, startGame, moveL, moveR, doJump, doSlide, spawnRow, setSkin(a, s) { SKA = a; SKS = s; }, setState(x) { state = x; } };
 })();
 </script>
 </body>
