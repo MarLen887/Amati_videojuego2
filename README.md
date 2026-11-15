@@ -1,7 +1,7 @@
 # Amati corre
 
 Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). La ciudad tiene canales, casas con tiendas y balcones, puentes, botes y vías de tren; los bloques altos son vagones. Requiere un navegador con WebGL.
-Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati y Sable son personajes originales hechos de bloques (estilo voxel). Amati usa ropa en los colores de Amati y tiene 3 estilos; Sable tiene 2 (uniforme y chaleco reflectante). El estilo 3 de Amati (gorro y audífonos) es el predeterminado. Se eligen en el menú con los botones numerados y corren, saltan y se agachan con brazos y piernas animados.
+Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati y Sable son personajes originales hechos de bloques (estilo voxel). Amati usa ropa en los colores de Amati y tiene 3 estilos; Sable tiene 2 (uniforme y chaleco reflectante). El estilo 3 de Amati (gorro y audífonos) es el predeterminado. Se eligen en el menú ("Escoge tu avatar") con los botones numerados y una vista previa 3D giratoria y corren, saltan y se agachan con brazos y piernas animados.
 
 ## Cómo se juega
 
@@ -12,7 +12,7 @@ Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y 
 - **Poderes:** Pomodoro (escudo contra un choque), Feynman (puntos dobles, 8 s) y Respiración (todo más lento, 6 s).
 - **Combo:** cada 4 tarjetas seguidas sube el multiplicador, hasta x5. Un choque lo reinicia.
 
-- **Niveles:** cada 18 s sube el nivel: más velocidad, más obstáculos, filas dobles y Sable te sigue durante menos tiempo. El cielo cambia (día, atardecer, noche, neón). La partida termina cuando Sable te atrapa.
+- **Niveles:** cada 10 s sube el nivel: más velocidad, más obstáculos, filas dobles y Sable te sigue durante menos tiempo. El cielo cambia (día, atardecer, noche, neón). La partida termina cuando Sable te atrapa.
 
 ## Abrirlo
 

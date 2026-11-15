@@ -48,7 +48,13 @@ canvas { position: fixed; inset: 0; display: block; }
   font: 900 clamp(18px, 3.4vmin, 24px)/1 var(--f); color: var(--navy); cursor: pointer; }
 .btn.alt { background: #fff; font-size: clamp(14px, 2.6vmin, 18px); }
 .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--navy); }
-.skins { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 0 0 8px; font: 800 14px/1 var(--f); color: var(--navy); }
+.pick { margin: 0 0 8px; }
+.pickT { font: 900 clamp(16px, 2.8vmin, 20px)/1.2 var(--f); color: var(--navy); margin-bottom: 6px; }
+.pickT::before, .pickT::after { content: '★'; color: var(--pink, #ff2e93); margin: 0 8px; }
+.pickRow { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.pickCol { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pickCol canvas { position: static; inset: auto; width: 120px; height: 140px; border-radius: 16px; border: 3px solid var(--navy); background: #eef3ff; }
+.pickL { font: 800 14px/1 var(--f); color: var(--navy); white-space: nowrap; }
 .sk { width: 34px; height: 34px; margin-left: 4px; border-radius: 10px; border: 3px solid var(--navy); background: #fff; font: 900 15px var(--f); color: var(--navy); cursor: pointer; }
 .sk.on { background: var(--lime); box-shadow: 0 3px 0 var(--navy); }
 .small { font: 700 13px/1.3 var(--f); color: #5a6396; margin-top: 8px; }
@@ -60,7 +66,8 @@ canvas { position: fixed; inset: 0; display: block; }
 #endChips span { border: 2px solid var(--navy); border-radius: 10px; padding: 2px 8px; font: 800 13px/1.3 var(--f); color: var(--navy); }
 .tech { background: #7ff0e0; } .tool { background: #ffb4a8; }
 #nogl { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: #fff; font: 800 20px/1.4 var(--f); }
-@media (max-height: 560px) { .how { display: none; } #endChips { max-height: 14vh; } .mascots img { height: 60px; } }
+@media (max-height: 800px) { .pickCol canvas { width: 96px; height: 112px; } .mascots img { height: 64px; } .how { font-size: 12px; padding: 8px 12px; margin-bottom: 8px; } .pickRow { gap: 10px; } }
+@media (max-height: 560px) { .pickCol canvas { width: 84px; height: 98px; } .how { display: none; } #endChips { max-height: 14vh; } .mascots img { height: 60px; } }
 </style>
 </head>
 <body>
@@ -96,9 +103,14 @@ canvas { position: fixed; inset: 0; display: block; }
       <li><b>Control:</b> stick o cruceta · A empieza · Start pausa</li>
       <li><b>Ojo:</b> los bloques bajos se saltan, las pancartas se pasan deslizando y los bloques altos se esquivan cambiando de carril. Si chocas, Sable se acerca; si chocas otra vez, te atrapa.</li>
     </ul>
-    <div class="skins">
-      <div>Amati <button class="sk" data-k="a" data-i="0">1</button><button class="sk" data-k="a" data-i="1">2</button><button class="sk" data-k="a" data-i="2">3</button></div>
-      <div>Sable <button class="sk" data-k="s" data-i="0">1</button><button class="sk" data-k="s" data-i="1">2</button></div>
+    <div class="pick">
+      <div class="pickT">Escoge tu avatar</div>
+      <div class="pickRow">
+        <div class="pickCol"><canvas id="pvA" width="240" height="280"></canvas>
+          <div class="pickL">Amati <button class="sk" data-k="a" data-i="0">1</button><button class="sk" data-k="a" data-i="1">2</button><button class="sk" data-k="a" data-i="2">3</button></div></div>
+        <div class="pickCol"><canvas id="pvS" width="240" height="280"></canvas>
+          <div class="pickL">Sable <button class="sk" data-k="s" data-i="0">1</button><button class="sk" data-k="s" data-i="1">2</button></div></div>
+      </div>
     </div>
     <button class="btn" id="btnPlay">¡Correr!</button>
     <div class="small" id="menuBest"></div>
@@ -558,9 +570,9 @@ function mkRow(z, d, safeNear) {
   return { row, safe };
 }
 function spawnRow() {
-  const z = 78, d = Math.min(1, G.t / 70), lanes = [-1, 0, 1];
+  const z = 78, d = Math.min(1, G.t / 40), lanes = [-1, 0, 1];
   const { row, safe } = mkRow(z, d, null);
-  if (G.t > 25 && Math.random() < 0.28 * d + 0.08) mkRow(z + 7 + Math.random() * 2, d, safe);
+  if (G.t > 15 && Math.random() < 0.28 * d + 0.08) mkRow(z + 7 + Math.random() * 2, d, safe);
   const lowLanes = row.filter(r => r.type === 'low').map(r => r.lane), used = new Set(row.map(r => r.lane));
   const cv = Math.floor(Math.random() * 6);
   if (lowLanes.length && Math.random() < 0.55) {
@@ -615,9 +627,9 @@ function update(dt) {
     caughtT -= dt; if (caughtT <= 0) endGame(); return;
   }
   G.t += dt;
-  const lv = 1 + Math.floor(G.t / 18);
+  const lv = 1 + Math.floor(G.t / 10);
   if (lv !== G.level) { G.level = lv; pop_('¡NIVEL ' + lv + '!', '#ffd23f'); showHint('Nivel ' + lv + ': más velocidad y más obstáculos', 2200); sfx('power'); setTheme((lv - 1) % 4); burst(P.lx * LW, 1.2, 0, '#ffd23f', 18); }
-  const base = 9 + Math.min(17, G.t * 0.2);
+  const base = 11 + Math.min(18, G.t * 0.45);
   const v = base * (G.slow > 0 ? 0.62 : 1) * (1 - 0.35 * clamp(G.stumble, 0, 1));
   G.stumble = Math.max(0, G.stumble - dt / 1.2); G.dist += v * dt; G.v = v;
   if (P.y <= 0.001 && Math.random() < dt * 30) dust(P.lx * LW, 0.08, 0.3);
@@ -924,7 +936,7 @@ function drawSable() {
 function render() {
   const asp = W / H, port = asp < 1;
   const fov = clamp(2 * Math.atan(Math.tan(0.47) / clamp(asp, 0.35, 1.2)), 0.95, 1.45);
-  const fovX = fov + clamp(((G.v || 9) - 9) / 17, 0, 1) * 0.12;
+  const fovX = fov + clamp(((G.v || 9) - 11) / 18, 0, 1) * 0.12;
   const shk = G.shake * 0.02 + clamp(((G.v || 9) - 18) / 8, 0, 1) * 0.01, cxp = P.lx * LW * 0.55 + (Math.random() - .5) * shk, cyp = (port ? 4.7 : 3.4) + (Math.random() - .5) * shk, czp = port ? 7.8 : 6.0;
   CAM = [cxp, cyp, czp];
   VP = m4.mul(m4.persp(fovX, asp, 0.1, 400), m4.look(CAM, [P.lx * LW * 0.3, 1.25, -7], [0, 1, 0]));
@@ -1007,11 +1019,32 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) { if 
 addEventListener('blur', () => { if (state === 'play') pauseGame(); });
 setMuted(muted); updateMenuBest();
 
+/* ---------- previsualización 3D giratoria en el menú ---------- */
+const PV = [{ cv: $('pvA'), who: 'A' }, { cv: $('pvS'), who: 'S' }];
+PV.forEach(p => p.cx = p.cv.getContext('2d'));
+function previews() {
+  const sv = { lx: P.lx, y: P.y, roll: P.roll, inv: G.invuln, st: G.stumble, sh: G.shield, ss: S_.show, so: S_.off, sl: S_.lx, sg: S_.lunge, sayT: S_.sayT };
+  P.lx = 0; P.y = 0; P.roll = 0; G.invuln = 0; G.stumble = 0; G.shield = false; S_.show = 1; S_.off = 0; S_.lx = 0; S_.lunge = 0; S_.sayT = 0;
+  gl.enable(gl.SCISSOR_TEST);
+  for (const p of PV) {
+    const pw = p.cv.width, ph = p.cv.height, asp = pw / ph, sable = p.who === 'S', cz = sable ? 1.1 : 0, yaw = time * 1.1;
+    gl.viewport(0, 0, pw, ph); gl.scissor(0, 0, pw, ph); gl.clearColor(0.933, 0.953, 1, 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    CAM = [0, 1.45, cz + 3.7]; VP = m4.mul(m4.persp(0.7, asp, 0.1, 60), m4.look(CAM, [0, 0.9, cz], [0, 1, 0]));
+    gl.uniformMatrix4fv(U.uVP, false, VP); gl.uniform3f(U.uCam, CAM[0], CAM[1], CAM[2]); gl.uniform2f(U.uRes, pw, ph);
+    curTex = null; M = m4.id(); MS.length = 0; gl.uniform1f(U.uOutline, 0); gl.uniform4f(U.uUV, 1, 1, 0, 0); gl.uniform1f(U.uMode, 0); gl.uniform1f(U.uTexMode, 0);
+    part(MESH.cyl, '#cfdcff', 0, -0.06, cz, 0.95, 0.12, 0.95, 0, 0, 0, { line: 0.03 });
+    push(); T(0, 0, cz); RY(yaw); T(0, 0, -cz); if (sable) drawSable(); else drawAmati(); pop();
+    flushQ();
+    p.cx.clearRect(0, 0, pw, ph); p.cx.drawImage(cv, 0, cv.height - ph, pw, ph, 0, 0, pw, ph);
+  }
+  gl.disable(gl.SCISSOR_TEST); gl.viewport(0, 0, cv.width, cv.height);
+  P.lx = sv.lx; P.y = sv.y; P.roll = sv.roll; G.invuln = sv.inv; G.stumble = sv.st; G.shield = sv.sh; S_.show = sv.ss; S_.off = sv.so; S_.lx = sv.sl; S_.lunge = sv.sg; S_.sayT = sv.sayT;
+}
 let last = performance.now(), frameDt = 0.016;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt; frameDt = dt;
-  pollPad(); update(dt); render();
+  pollPad(); update(dt); if (state === 'menu') previews(); render();
 }
 requestAnimationFrame(frame);
 window.__amati = { get G() { return G; }, get P() { return P; }, get S() { return S_; }, get things() { return things; }, get state() { return state; }, startGame, moveL, moveR, doJump, doSlide, setSkin(a, s) { SKA = a; SKS = s; }, setState(x) { state = x; } };
