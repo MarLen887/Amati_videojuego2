@@ -1,7 +1,7 @@
 # Amati corre
 
 Videojuego *runner* **en 3D real** de tres carriles (estilo Subway Surfers) en un solo archivo, sin dependencias externas (motor WebGL propio). La ciudad tiene canales, casas con tiendas y balcones, puentes, botes y vías de tren; los bloques altos son vagones. Requiere un navegador con WebGL.
-Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati es un corredor humano original (sudadera, gorro, mochila y tenis en los colores de Amati) que corre, salta y se agacha; Sable corre con brazos y piernas animados.
+Amati corre, atrapa **tarjetas** de colores (sin nombres) en lugar de monedas y esquiva distracciones. **Sable**, la policía, la persigue. Amati y Sable son personajes originales hechos de bloques (estilo voxel). Amati usa ropa en los colores de Amati y tiene 3 estilos; Sable tiene 2 (uniforme y chaleco reflectante). Se eligen en el menú con los botones numerados y corren, saltan y se agachan con brazos y piernas animados.
 
 ## Cómo se juega
 
